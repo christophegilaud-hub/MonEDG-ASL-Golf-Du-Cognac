@@ -1,0 +1,2984 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASL Golf du Cognac — Suivi des cours</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+  :root{
+    --green-900:#173A2E;
+    --green-700:#2C6650;
+    --green-500:#4F8B6B;
+    --green-100:#E7F0EA;
+    --cream:#F6F3EA;
+    --sand:#C9A227;
+    --sand-light:#F1E4B8;
+    --ink:#26261F;
+    --ink-soft:#5B5B4F;
+    --red:#B3432B;
+    --red-light:#F5DED7;
+    --white:#FFFFFF;
+    --line:#E1DCC9;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+  }
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px 80px;}
+  header.top{
+    background:var(--green-900);
+    color:var(--cream);
+    padding:28px 20px 22px;
+    border-bottom:4px solid var(--sand);
+  }
+  header.top .wrap{padding:0;display:flex;align-items:center;gap:14px;max-width:960px;margin:0 auto;padding-left:20px;padding-right:20px;}
+  .flagmark{width:34px;height:34px;flex:none;}
+  header.top h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:1.5rem;
+    margin:0;
+    letter-spacing:.2px;
+  }
+  header.top p{margin:2px 0 0;font-size:.82rem;color:var(--sand-light);letter-spacing:.4px;text-transform:uppercase;}
+  nav.tabs{
+    display:flex;
+    gap:4px;
+    overflow-x:auto;
+    padding:14px 20px 0;
+    max-width:960px;
+    margin:0 auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  nav.tabs button{
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:.86rem;
+    padding:10px 16px;
+    border:none;
+    background:transparent;
+    color:var(--ink-soft);
+    cursor:pointer;
+    border-radius:10px 10px 0 0;
+    white-space:nowrap;
+    border-bottom:3px solid transparent;
+    transition:.15s;
+  }
+  nav.tabs button:hover{background:var(--green-100);}
+  nav.tabs button.active{
+    color:var(--green-900);
+    border-bottom:3px solid var(--sand);
+    background:var(--white);
+  }
+  main{padding-top:22px;}
+  h2.section-title{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:1.35rem;
+    color:var(--green-900);
+    margin:0 0 4px;
+  }
+  p.section-sub{color:var(--ink-soft);margin:0 0 18px;font-size:.92rem;}
+  .card{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:18px 20px;
+    margin-bottom:16px;
+  }
+  .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;}
+  .stat{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-left:4px solid var(--sand);
+    border-radius:10px;
+    padding:14px 16px;
+  }
+  .stat .num{font-family:'Fraunces',serif;font-size:1.7rem;font-weight:700;color:var(--green-900);}
+  .stat .label{font-size:.78rem;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.3px;}
+  .stat.alert{border-left-color:var(--red);}
+  .stat.alert .num{color:var(--red);}
+  .btn{
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:.86rem;
+    padding:9px 16px;
+    border-radius:8px;
+    border:1px solid var(--green-700);
+    background:var(--green-700);
+    color:var(--white);
+    cursor:pointer;
+  }
+  .btn:hover{background:var(--green-900);border-color:var(--green-900);}
+  .btn.secondary{background:var(--white);color:var(--green-700);}
+  .btn.secondary:hover{background:var(--green-100);}
+  .btn.danger{background:var(--white);color:var(--red);border-color:var(--red-light);}
+  .btn.danger:hover{background:var(--red-light);}
+  .btn.small{padding:5px 10px;font-size:.76rem;}
+  label{display:block;font-size:.8rem;font-weight:600;color:var(--ink-soft);margin:0 0 4px;}
+  input,select,textarea{
+    font-family:'Inter',sans-serif;
+    font-size:.9rem;
+    padding:8px 10px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--white);
+    color:var(--ink);
+    width:100%;
+  }
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--sand);outline-offset:1px;}
+  .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:12px;}
+  .field{margin-bottom:0;}
+  .group-card{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:12px 14px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;
+    cursor:pointer;background:var(--white);
+  }
+  .group-card:hover{border-color:var(--green-500);}
+  .group-card.active{border-color:var(--sand);background:var(--sand-light);}
+  .group-card .name{font-weight:700;color:var(--green-900);}
+  .group-card .meta{font-size:.78rem;color:var(--ink-soft);}
+  table{width:100%;border-collapse:collapse;font-size:.88rem;}
+  th{
+    text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.3px;
+    color:var(--ink-soft);border-bottom:2px solid var(--line);padding:8px 6px;
+  }
+  td{padding:9px 6px;border-bottom:1px solid var(--line);}
+  tr:last-child td{border-bottom:none;}
+  .pill{
+    display:inline-block;padding:3px 9px;border-radius:99px;font-size:.72rem;font-weight:700;
+  }
+  .pill.ok{background:var(--green-100);color:var(--green-700);}
+  .pill.warn{background:var(--sand-light);color:#8a6d0f;}
+  .pill.bad{background:var(--red-light);color:var(--red);}
+  input[type=checkbox]{width:20px;height:20px;accent-color:var(--green-700);cursor:pointer;}
+  .row-between{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
+  .empty{
+    text-align:center;color:var(--ink-soft);padding:30px 10px;font-size:.9rem;border:1px dashed var(--line);border-radius:12px;
+  }
+  .scorecard-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;}
+  .scorecard{border-collapse:collapse;min-width:100%;}
+  .scorecard th, .scorecard td{border:1px solid var(--line);text-align:center;padding:8px 10px;font-size:.82rem;}
+  .scorecard th.name-col, .scorecard td.name-col{text-align:left;position:sticky;left:0;background:var(--white);font-weight:600;color:var(--green-900);}
+  .scorecard th{background:var(--green-100);color:var(--green-900);font-family:'Fraunces',serif;font-weight:600;}
+  .mark-present{color:var(--green-700);font-weight:700;}
+  .mark-absent{color:var(--red);font-weight:700;}
+  .toast{
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+    background:var(--green-900);color:var(--cream);padding:10px 20px;border-radius:10px;
+    font-size:.86rem;font-weight:600;box-shadow:0 6px 18px rgba(0,0,0,.2);
+    opacity:0;pointer-events:none;transition:opacity .25s, transform .25s;
+    z-index:50;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);}
+  textarea.bulletin{min-height:220px;font-family:'Inter',sans-serif;line-height:1.5;white-space:pre-wrap;}
+  .flag-icon{width:16px;height:16px;flex:none;}
+  .inline-actions{display:flex;gap:6px;}
+  .note-star{color:var(--sand);font-weight:700;}
+  .helper{font-size:.78rem;color:var(--ink-soft);margin-top:4px;}
+  @media(max-width:600px){
+    .stat-row{grid-template-columns:1fr 1fr;}
+  }
+  #login-screen{
+    min-height:100vh;display:flex;align-items:center;justify-content:center;
+    background:var(--green-900);padding:20px;
+  }
+  .login-card{
+    background:var(--cream);border-radius:16px;padding:34px 30px;max-width:360px;width:100%;
+    box-shadow:0 12px 30px rgba(0,0,0,.25);text-align:center;
+  }
+  .login-card h1{font-family:'Fraunces',serif;font-size:1.35rem;color:var(--green-900);margin:10px 0 4px;}
+  .login-card p{color:var(--ink-soft);font-size:.85rem;margin:0 0 18px;}
+  .login-card .field{text-align:left;margin-bottom:12px;}
+  .login-card .btn{width:100%;margin-top:6px;}
+  .login-error{color:var(--red);font-size:.82rem;margin-top:10px;min-height:1em;}
+  .login-success{color:var(--green-700);font-size:.82rem;margin-top:10px;min-height:1em;font-weight:600;}
+  .login-switch{font-size:.82rem;color:var(--ink-soft);margin-top:16px;}
+  .login-switch a{color:var(--green-700);font-weight:700;text-decoration:none;}
+  .login-switch a:hover{text-decoration:underline;}
+  .logout-btn{
+    margin-left:auto;background:transparent;border:1px solid var(--sand-light);color:var(--sand-light);
+    padding:7px 12px;border-radius:8px;font-size:.78rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;
+  }
+  .logout-btn:hover{background:rgba(255,255,255,.08);}
+  .perf-h{margin-top:0;font-family:'Fraunces',serif;color:var(--green-900);}
+  .cat-grid{display:flex;flex-direction:column;gap:10px;}
+  .cat-row{display:grid;grid-template-columns:110px 1fr 90px;align-items:center;gap:10px;}
+  .cat-label{font-size:.85rem;font-weight:600;color:var(--ink);}
+  .cat-bar-wrap{background:var(--green-100);border-radius:6px;height:10px;overflow:hidden;}
+  .cat-bar{background:var(--sand);height:100%;border-radius:6px;}
+  .cat-val{font-size:.8rem;text-align:right;white-space:nowrap;}
+  .delta{margin-left:4px;font-weight:700;font-size:.76rem;}
+  .delta.up{color:var(--green-700);}
+  .delta.down{color:var(--red);}
+  .delta.flat{color:var(--ink-soft);}
+  .cat-inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:6px;}
+  .coach-card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px;background:var(--white);}
+  .coach-card .name{font-weight:700;color:var(--green-900);}
+  .coach-card .meta{font-size:.78rem;color:var(--ink-soft);}
+  .eval-section{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:14px;background:var(--cream);}
+  .eval-section-title{margin:0 0 4px;font-family:'Fraunces',serif;color:var(--green-900);font-size:1.02rem;}
+  .eval-criterion{display:grid;grid-template-columns:1fr 180px;gap:12px;align-items:start;padding:8px 0;border-top:1px dashed var(--line);}
+  .eval-criterion:first-of-type{border-top:none;}
+  .eval-criterion-label{font-size:.86rem;font-weight:600;color:var(--ink);}
+  .eval-history-card{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;background:var(--white);}
+  @media(max-width:560px){
+    .eval-criterion{grid-template-columns:1fr;}
+  }
+  .flagmark-slot{width:34px;height:34px;flex:none;display:flex;align-items:center;justify-content:center;}
+  .color-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;}
+  input[type=color]{height:42px;padding:3px;cursor:pointer;}
+  .presence-toggle{display:inline-flex;gap:4px;}
+  .ptoggle-btn{font-family:'Inter',sans-serif;font-size:.72rem;font-weight:600;padding:6px 9px;border-radius:6px;border:1px solid var(--line);background:var(--white);color:var(--ink-soft);cursor:pointer;white-space:nowrap;}
+  .ptoggle-btn:hover{border-color:var(--green-500);}
+  .ptoggle-btn.active-present{background:var(--green-700);border-color:var(--green-700);color:var(--white);}
+  .ptoggle-btn.active-absent{background:var(--red);border-color:var(--red);color:var(--white);}
+  .ptoggle-btn.active-justifiee{background:var(--sand);border-color:var(--sand);color:var(--white);}
+</style>
+</head>
+<body>
+
+<div id="login-screen" style="display:none;">
+  <div class="login-card">
+    <svg class="flagmark" viewBox="0 0 24 24" fill="none" style="margin:0 auto;">
+      <line x1="5" y1="2" x2="5" y2="22" stroke="#173A2E" stroke-width="2" stroke-linecap="round"/>
+      <path d="M5 3 L18 6 L5 10 Z" fill="#C9A227"/>
+      <circle cx="5" cy="22" r="1.6" fill="#173A2E"/>
+    </svg>
+    <h1>ASL Golf du Cognac</h1>
+
+    <div id="login-view">
+      <p>Connectez-vous avec votre compte coach ou votre compte parent.</p>
+      <form id="form-login">
+        <div class="field"><label>E-mail</label><input type="email" name="email" required autocomplete="username"></div>
+        <div class="field"><label>Mot de passe</label><input type="password" name="password" required autocomplete="current-password"></div>
+        <button class="btn" type="submit">Se connecter</button>
+        <div class="login-error" id="login-error"></div>
+      </form>
+      <p class="login-switch">Vous êtes parent d'élève ? <a href="#" id="show-signup">Créer un compte parent</a></p>
+    </div>
+
+    <div id="signup-view" style="display:none;">
+      <p>Créez votre compte parent avec l'adresse e-mail déjà connue de votre école de golf (celle renseignée sur la fiche de votre enfant).</p>
+      <form id="form-signup">
+        <div class="field"><label>E-mail</label><input type="email" name="email" required autocomplete="username"></div>
+        <div class="field"><label>Mot de passe</label><input type="password" name="password" required minlength="6" autocomplete="new-password"></div>
+        <button class="btn" type="submit">Créer mon compte parent</button>
+        <div class="login-error" id="signup-error"></div>
+        <div class="login-success" id="signup-success"></div>
+      </form>
+      <p class="login-switch">Vous avez déjà un compte ? <a href="#" id="show-login">Se connecter</a></p>
+    </div>
+  </div>
+</div>
+
+<div id="main-app" style="display:none;">
+<header class="top">
+  <div class="wrap">
+    <div id="header-logo" class="flagmark-slot">
+      <svg class="flagmark" viewBox="0 0 24 24" fill="none">
+        <line x1="5" y1="2" x2="5" y2="22" stroke="#F1E4B8" stroke-width="2" stroke-linecap="round"/>
+        <path d="M5 3 L18 6 L5 10 Z" fill="#C9A227"/>
+        <circle cx="5" cy="22" r="1.6" fill="#F1E4B8"/>
+      </svg>
+    </div>
+    <div>
+      <h1>ASL Golf du Cognac</h1>
+      <p>Suivi des cours &amp; des élèves</p>
+    </div>
+    <button class="logout-btn" id="btn-logout">Se déconnecter</button>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs"></nav>
+
+<main class="wrap"><div id="app"></div></main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------------------------------------------------------
+   ÉTAT
+--------------------------------------------------------- */
+const DEFAULT_COLORS = { header:'#173A2E', boutons:'#2C6650', accent:'#C9A227', fond:'#F6F3EA' };
+const DEFAULT_LOGO_SVG = `<svg class="flagmark" viewBox="0 0 24 24" fill="none">
+  <line x1="5" y1="2" x2="5" y2="22" stroke="#F1E4B8" stroke-width="2" stroke-linecap="round"/>
+  <path d="M5 3 L18 6 L5 10 Z" fill="var(--sand)"/>
+  <circle cx="5" cy="22" r="1.6" fill="#F1E4B8"/>
+</svg>`;
+let state = { groups: [], students: [], sessions: [], performance: [], objectifs: [], coaches: [], suggestions: [], saisons: [], saisonActiveId: null, stages: [], competitions: [], settings: { logoDataUrl: null, colors: { ...DEFAULT_COLORS } } };
+let ui = {
+  tab: 'dashboard',
+  selGroupManage: null,
+  selGroupAttendance: null,
+  attendanceDate: todayISO(),
+  alertThreshold: 2,
+  perfStudent: null,
+  performanceSubTab: 'fiche',
+  editingCoachId: null,
+  dashPeriodStart: null,
+  dashPeriodEnd: null,
+  suggestionsFilterStatut: 'all',
+  groupesSubTab: 'groupes',
+  selGroupSaison: null,
+  openStageId: null,
+  openCompetitionId: null,
+  bulletinStudent: null,
+  bulletinMonth: monthISO(new Date()),
+  elevesFilterGroup: 'all',
+  elevesSearch: '',
+  editingStudentId: null
+};
+const JOURS = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+const SCORE_LABELS = {1:'Non acquis', 2:'En cours', 3:'Acquis', 4:'Maîtrisé'};
+const NIVEAUX = [
+  {key:'debutant', label:'Débutant'},
+  {key:'progression', label:'Progression'},
+  {key:'confirme', label:'Confirmé'},
+  {key:'performance', label:'Performance / Élite'}
+];
+
+const EVAL_GRIDS = {
+  debutant: [
+    {
+      key:'swing_base', label:'Bases du Swing',
+      objectif:'Acquérir les fondamentaux du geste technique.',
+      criteria:[
+        {key:'grip', label:'Prise en main (Grip)', desc:'Positionnement correct des mains sur le club.'},
+        {key:'posture', label:'Posture de base', desc:'Alignement et équilibre au départ du geste.'},
+        {key:'contact', label:'Contact avec la balle', desc:'Capacité à toucher la balle de façon régulière.'}
+      ]
+    },
+    {
+      key:'securite_comportement', label:'Sécurité & Comportement',
+      objectif:"Adopter les bons réflexes de sécurité et d'écoute.",
+      criteria:[
+        {key:'securite', label:'Sécurité', desc:'Respect des distances et consignes de sécurité sur le practice.'},
+        {key:'ecoute', label:'Écoute du coach', desc:'Attention et application des consignes données.'},
+        {key:'comportement', label:'Comportement général', desc:'Tenue, politesse et respect du matériel.'}
+      ]
+    }
+  ],
+  progression: [
+    {
+      key:'grand_jeu', label:'Grand Jeu (Driving & Fers)',
+      objectif:'Capacité à produire une trajectoire longue et rectiligne.',
+      criteria:[
+        {key:'posture_grip', label:'Posture et Grip', desc:'Placement des mains, alignement du corps, équilibre.'},
+        {key:'qualite_contact', label:'Qualité du contact', desc:'Centrage de balle dans la face de club.'},
+        {key:'regularite_distance', label:'Régularité et Distance', desc:'Longueur et dispersion de la trajectoire.'}
+      ]
+    },
+    {
+      key:'petit_jeu', label:'Petit Jeu (Chipping & Sorties de bunker)',
+      objectif:'Approcher la balle au plus près du trou depuis les abords du green.',
+      criteria:[
+        {key:'dosage_chipping', label:'Dosage (Chipping)', desc:"Maîtrise de l'amplitude du swing selon la distance."},
+        {key:'choix_club', label:'Choix du club', desc:'Utilisation pertinente du club selon la situation.'}
+      ]
+    },
+    {
+      key:'putting', label:'Putting',
+      objectif:'Limiter le nombre de coups sur le green.',
+      criteria:[
+        {key:'lecture_green', label:'Lecture de Green', desc:'Identification des pentes et du sens de la roule.'},
+        {key:'controle_distance', label:'Contrôle de la distance (Dosage)', desc:'Réduction des erreurs de longueur.'}
+      ]
+    },
+    {
+      key:'attitude', label:'Attitude & Sécurité',
+      objectif:'Respecter le jeu, les autres et le terrain.',
+      criteria:[
+        {key:'securite', label:'Sécurité', desc:'Vigilance absolue avant de swinguer.'},
+        {key:'respect_terrain', label:'Respect du terrain', desc:'Relevage des pitchs, remplacement des divots.'},
+        {key:'gestion_emotions', label:'Gestion des émotions', desc:'Résilience face aux mauvais coups et concentration.'}
+      ]
+    }
+  ],
+  confirme: [
+    {
+      key:'grand_jeu', label:'Grand Jeu (Driving & Fers)',
+      objectif:'Capacité à produire une trajectoire longue et rectiligne.',
+      criteria:[
+        {key:'posture_grip', label:'Posture et Grip', desc:'Placement des mains, alignement du corps, équilibre.'},
+        {key:'qualite_contact', label:'Qualité du contact', desc:'Centrage de balle dans la face de club.'},
+        {key:'regularite_distance', label:'Régularité et Distance', desc:'Longueur et dispersion de la trajectoire.'}
+      ]
+    },
+    {
+      key:'petit_jeu', label:'Petit Jeu (Chipping & Sorties de bunker)',
+      objectif:'Approcher la balle au plus près du trou depuis les abords du green.',
+      criteria:[
+        {key:'dosage_chipping', label:'Dosage (Chipping)', desc:"Maîtrise de l'amplitude du swing selon la distance."},
+        {key:'choix_club', label:'Choix du club', desc:'Utilisation pertinente du club selon la situation (Sandwedge, Pitching wedge, Fer 7).'}
+      ]
+    },
+    {
+      key:'putting', label:'Putting',
+      objectif:'Limiter le nombre de coups sur le green (viser le « 2-putts » maximum).',
+      criteria:[
+        {key:'lecture_green', label:'Lecture de Green', desc:'Identification des pentes et du sens de la roule.'},
+        {key:'controle_distance', label:'Contrôle de la distance (Dosage)', desc:'Réduction des erreurs de longueur.'},
+        {key:'direction_visee', label:'Direction (Visée)', desc:'Capacité à lancer la balle sur la ligne choisie.'}
+      ]
+    },
+    {
+      key:'strategie', label:'Stratégie & Gestion du Parcours',
+      objectif:'Faire les bons choix pour optimiser son score.',
+      criteria:[
+        {key:'routine_jeu', label:'Routine de jeu', desc:"Mise en place d'une préparation constante avant chaque coup (coup d'essai, visualisation)."},
+        {key:'securite_risque', label:'Sécurité / Prise de risque', desc:'Évitement intelligent des obstacles (bunkers, hors-limites, eau).'}
+      ]
+    },
+    {
+      key:'attitude', label:'Attitude, Étiquette & Sécurité',
+      objectif:'Respecter le jeu, les autres et le terrain.',
+      criteria:[
+        {key:'securite', label:'Sécurité', desc:'Vigilance absolue avant de swinguer (personne dans la zone de danger).'},
+        {key:'respect_terrain', label:'Respect du terrain', desc:'Relevage des pitchs, remplacement des divots, ratissage des bunkers.'},
+        {key:'gestion_emotions', label:'Gestion des émotions', desc:'Résilience face aux mauvais coups et concentration.'}
+      ]
+    },
+    {
+      key:'etiquette', label:'Étiquette du Golf',
+      objectif:'Respecter les valeurs et les codes du jeu, sur le parcours comme envers les autres.',
+      criteria:[
+        {key:'respect_partenaires', label:'Respect des partenaires', desc:'Courtoisie, silence et respect du jeu des autres joueurs.'},
+        {key:'respect_parcours', label:'Respect du Parcours', desc:'Entretien et préservation du terrain et de ses infrastructures.'},
+        {key:'respect_coach', label:'Respect du Coach', desc:'Écoute et application des consignes données par le coach.'},
+        {key:'securite', label:'Sécurité', desc:'Vigilance constante pour la sécurité de soi et des autres.'},
+        {key:'rythme_jeu', label:'Rythme de jeu', desc:"Maintien d'une cadence de jeu fluide, sans retard excessif."},
+        {key:'greens', label:'Sur les Greens', desc:'Ne pas marcher sur la ligne de putt, réparer les pitchs, gérer le drapeau correctement.'},
+        {key:'bunkers', label:'Dans les Bunkers', desc:'Entrer et sortir du bon côté, ratisser après le passage.'},
+        {key:'fairways', label:'Sur les Fairways', desc:'Replacer les divots, préserver le sol de jeu.'}
+      ]
+    }
+  ],
+  performance: [
+    {
+      key:'grand_jeu_avance', label:'Grand Jeu Avancé',
+      objectif:'Maîtriser la trajectoire et la distance sous pression de compétition.',
+      criteria:[
+        {key:'controle_trajectoire', label:'Contrôle de trajectoire', desc:'Capacité à travailler la balle (draw/fade) volontairement.'},
+        {key:'gestion_distances', label:'Gestion des distances', desc:'Précision des yardages et choix de club en conséquence.'},
+        {key:'repetabilite', label:'Répétabilité sous pression', desc:'Constance du geste en situation de jeu ou de compétition.'}
+      ]
+    },
+    {
+      key:'petit_jeu_avance', label:'Petit Jeu Avancé',
+      objectif:'Diversifier et fiabiliser les trajectoires autour des greens.',
+      criteria:[
+        {key:'variete_trajectoires', label:'Variété des trajectoires', desc:'Chip, pitch, lob : choix et exécution adaptés à la situation.'},
+        {key:'bunker_maitrise', label:'Sorties de bunker maîtrisées', desc:'Régularité et précision depuis les bunkers de green.'}
+      ]
+    },
+    {
+      key:'putting_competition', label:'Putting de Compétition',
+      objectif:'Sécuriser les putts décisifs et gérer les longues distances.',
+      criteria:[
+        {key:'lecture_complexe', label:'Lecture de greens complexes', desc:'Analyse fine des pentes et vitesses de green.'},
+        {key:'putts_pression', label:'Putts de pression (< 2m)', desc:'Fiabilité sur les putts courts décisifs.'},
+        {key:'longs_putts', label:'Gestion des longs putts', desc:'Dosage pour limiter les 3-putts.'}
+      ]
+    },
+    {
+      key:'strategie_parcours', label:'Stratégie de Parcours',
+      objectif:"Optimiser la prise de décision sur l'ensemble du parcours.",
+      criteria:[
+        {key:'plan_jeu', label:'Plan de jeu', desc:"Élaboration et respect d'une stratégie de round."},
+        {key:'decision_pression', label:'Décision sous pression', desc:'Choix pertinents dans les moments clés.'},
+        {key:'analyse_post_parcours', label:'Analyse post-parcours', desc:"Capacité à tirer les enseignements d'un round."}
+      ]
+    },
+    {
+      key:'preparation_mentale_physique', label:'Préparation Mentale & Physique',
+      objectif:'Développer la robustesse mentale et la condition physique du joueur.',
+      criteria:[
+        {key:'gestion_stress', label:'Gestion du stress', desc:'Maîtrise des émotions en situation de compétition.'},
+        {key:'routine_preparation', label:'Routine de préparation', desc:"Constance de l'échauffement et de la mise en condition."},
+        {key:'condition_physique', label:'Condition physique', desc:'Endurance et préparation physique adaptées à la compétition.'}
+      ]
+    },
+    {
+      key:'etiquette_competition', label:'Étiquette & Esprit de Compétition',
+      objectif:'Représenter les valeurs du golf au plus haut niveau.',
+      criteria:[
+        {key:'regles_competition', label:'Respect des règles de compétition', desc:'Connaissance et application stricte du règlement.'},
+        {key:'fair_play', label:'Fair-play', desc:'Intégrité et sportivité en toutes circonstances.'},
+        {key:'rythme_competition', label:'Rythme de jeu en compétition', desc:'Respect du temps de jeu imparti.'}
+      ]
+    }
+  ]
+};
+
+function gridFor(niveau){
+  return EVAL_GRIDS[niveau] || EVAL_GRIDS.confirme;
+}
+function niveauLabel(niveau){
+  const n = NIVEAUX.find(n=>n.key===niveau);
+  return n ? n.label : 'Confirmé';
+}
+
+const STATUTS_SUGGESTION = [
+  {key:'a_letude', label:"À l'étude"},
+  {key:'planifie', label:'Planifié'},
+  {key:'en_cours', label:'En cours'},
+  {key:'fait', label:'Fait'},
+  {key:'abandonne', label:'Abandonné'}
+];
+const PRIORITES_SUGGESTION = [
+  {key:'haute', label:'Haute'},
+  {key:'normale', label:'Normale'},
+  {key:'basse', label:'Basse'}
+];
+
+/* ---------------------------------------------------------
+   CONFIGURATION SUPABASE
+   -> Collez ici l'URL et la clé "anon public" de votre projet
+      Supabase (Settings > API dans le tableau de bord Supabase).
+--------------------------------------------------------- */
+const SUPABASE_URL = "https://iykzkzeigstenivlocyz.supabase.co";
+const SUPABASE_ANON_KEY = "iykzkzeigstenivlocyz";
+const ROW_ID = 'golf-cognac'; // identifiant de la ligne unique qui stocke toutes les données
+
+const sb = (SUPABASE_URL.startsWith('http')) ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function monthISO(d){ return d.toISOString().slice(0,7); }
+function uid(){ return crypto.randomUUID(); }
+function esc(s){
+  return (s===undefined||s===null?'':String(s))
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fmtDate(iso){
+  const d = new Date(iso+'T00:00:00');
+  return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
+
+/* ---------------------------------------------------------
+   PERSISTENCE
+--------------------------------------------------------- */
+async function loadState(){
+  try{
+    const { data, error } = await sb.from('app_state').select('data').eq('id', ROW_ID).single();
+    if(error) throw error;
+    if(data && data.data){
+      state = data.data;
+      state.groups = state.groups || [];
+      state.students = state.students || [];
+      state.sessions = state.sessions || [];
+      state.performance = state.performance || [];
+      state.objectifs = state.objectifs || [];
+      state.coaches = state.coaches || [];
+      state.suggestions = state.suggestions || [];
+      state.saisons = state.saisons || [];
+      state.stages = state.stages || [];
+      state.competitions = state.competitions || [];
+      state.settings = state.settings || {};
+      state.settings.colors = state.settings.colors || { ...DEFAULT_COLORS };
+      if(state.settings.logoDataUrl === undefined) state.settings.logoDataUrl = null;
+    }
+  }catch(e){
+    // Si la ligne n'existe pas encore, on la crée avec un état vide
+    try{
+      await sb.from('app_state').insert({ id: ROW_ID, data: state });
+    }catch(e2){
+      showToast("Erreur de chargement des données.");
+    }
+  }
+}
+async function saveState(){
+  try{
+    const { error } = await sb.from('app_state').update({ data: state, updated_at: new Date().toISOString() }).eq('id', ROW_ID);
+    if(error) throw error;
+  }catch(e){
+    showToast("Erreur d'enregistrement — réessayez.");
+  }
+}
+
+/* ---------------------------------------------------------
+   AUTHENTIFICATION
+--------------------------------------------------------- */
+let currentUserRole = 'coach';
+let currentUserEmail = null;
+
+function showLoginScreen(errorMsg){
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('main-app').style.display = 'none';
+  document.getElementById('login-view').style.display = 'block';
+  document.getElementById('signup-view').style.display = 'none';
+  document.getElementById('login-error').textContent = errorMsg || '';
+}
+async function showAppScreen(){
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'block';
+  document.getElementById('app').innerHTML = `<div class="empty">Chargement des données…</div>`;
+  const { data: { session } } = await sb.auth.getSession();
+  currentUserEmail = session && session.user ? session.user.email : null;
+  currentUserRole = (session && session.user && session.user.user_metadata && session.user.user_metadata.role) || 'coach';
+  await loadState();
+  if(ensureDefaultSaison()) await saveState();
+  applyTheme();
+  if(currentUserRole === 'parent'){
+    document.getElementById('tabs').style.display = 'none';
+    showParentPortal();
+  }else{
+    document.getElementById('tabs').style.display = 'flex';
+    render();
+  }
+}
+function bindAuthEvents(){
+  const formLogin = document.getElementById('form-login');
+  formLogin.addEventListener('submit', async e=>{
+    e.preventDefault();
+    const fd = new FormData(formLogin);
+    const email = fd.get('email').trim();
+    const password = fd.get('password');
+    document.getElementById('login-error').textContent = '';
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if(error){
+      document.getElementById('login-error').textContent = "Identifiants incorrects.";
+    }
+  });
+  document.getElementById('btn-logout').addEventListener('click', async ()=>{
+    await sb.auth.signOut();
+  });
+
+  // --- Bascule connexion / inscription parent ---
+  document.getElementById('show-signup').addEventListener('click', e=>{
+    e.preventDefault();
+    document.getElementById('login-view').style.display = 'none';
+    document.getElementById('signup-view').style.display = 'block';
+  });
+  document.getElementById('show-login').addEventListener('click', e=>{
+    e.preventDefault();
+    document.getElementById('signup-view').style.display = 'none';
+    document.getElementById('login-view').style.display = 'block';
+  });
+
+  // --- Inscription parent ---
+  const formSignup = document.getElementById('form-signup');
+  formSignup.addEventListener('submit', async e=>{
+    e.preventDefault();
+    const fd = new FormData(formSignup);
+    const email = fd.get('email').trim();
+    const password = fd.get('password');
+    document.getElementById('signup-error').textContent = '';
+    document.getElementById('signup-success').textContent = '';
+    const { data, error } = await sb.auth.signUp({
+      email, password,
+      options: { data: { role: 'parent' } }
+    });
+    if(error){
+      document.getElementById('signup-error').textContent = error.message === 'User already registered'
+        ? 'Un compte existe déjà avec cet e-mail. Essayez de vous connecter.'
+        : "Impossible de créer le compte. Vérifiez l'adresse e-mail et réessayez.";
+      return;
+    }
+    formSignup.reset();
+    document.getElementById('signup-success').textContent = 'Compte créé ! Vérifiez votre boîte mail pour confirmer votre adresse, puis connectez-vous.';
+  });
+}
+/* ---------------------------------------------------------
+   ESPACE PARENT
+--------------------------------------------------------- */
+function showParentPortal(){
+  const app = document.getElementById('app');
+  const parentEmail = (currentUserEmail || '').toLowerCase();
+  const children = state.students.filter(s=>(s.parentEmail||'').toLowerCase()===parentEmail);
+  const now = todayISO();
+  const openComps = state.competitions
+    .filter(c=>!c.dateLimiteInscription || c.dateLimiteInscription>=now)
+    .sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+
+  app.innerHTML = `
+    <h2 class="section-title">Espace Parent</h2>
+    <p class="section-sub">Suivi et inscriptions aux compétitions pour vos enfants inscrits à l'école de golf.</p>
+    ${ children.length===0 ? `<div class="empty">Aucun élève n'est associé à l'adresse ${esc(currentUserEmail||'')} pour l'instant. Contactez votre école de golf si cela ne devrait pas être le cas.</div>` :
+      children.map(child=>renderParentChildCard(child, openComps)).join('')
+    }
+  `;
+  bindParentPortalEvents();
+}
+
+function renderParentChildCard(child, openComps){
+  const group = groupById(child.groupId);
+  const recentSessions = sessionsOfGroup(child.groupId).slice(-5).reverse();
+  const evals = state.performance.filter(p=>p.studentId===child.id && p.sections).sort((a,b)=>b.date.localeCompare(a.date));
+  const latest = evals[0] || null;
+  const grid = latest ? gridFor(latest.niveau) : [];
+  const registered = state.competitions.filter(c=>(c.participantIds||[]).includes(child.id));
+  const eligibleComps = openComps.filter(c=>!c.niveaux || c.niveaux.length===0 || c.niveaux.includes(child.niveau||'debutant'));
+
+  return `
+    <div class="card">
+      <h3 class="perf-h">${esc(child.prenom)} ${esc(child.nom)}</h3>
+      <p class="helper" style="margin-bottom:14px;">${esc(group?.nom||'Sans groupe')} · Niveau ${esc(niveauLabel(child.niveau||'debutant'))}</p>
+
+      <h4 class="eval-section-title" style="margin-bottom:8px;">Présences récentes</h4>
+      ${ recentSessions.length===0 ? `<p class="helper">Aucune séance enregistrée pour l'instant.</p>` :
+        recentSessions.map(s=>{
+          const v = normalizePresence(s.presences ? s.presences[child.id] : undefined);
+          const label = v==='present'?'Présent':v==='absent'?'Absent':v==='justifiee'?'Absence justifiée':'Non renseigné';
+          const cls = v==='present'?'ok':v==='justifiee'?'warn':'bad';
+          return `<div class="row-between" style="padding:7px 0;border-bottom:1px solid var(--line);"><span style="font-size:.88rem;">${fmtDate(s.date)}</span><span class="pill ${cls}">${label}</span></div>`;
+        }).join('')
+      }
+
+      ${ latest ? `
+        <h4 class="eval-section-title" style="margin:18px 0 8px;">Dernière évaluation (${fmtDate(latest.date)})</h4>
+        <div class="cat-grid">
+          ${grid.map(section=>{
+            const val = sectionAverage(latest.sections, section.key, latest.niveau);
+            return `<div class="cat-row">
+              <div class="cat-label">${section.label}</div>
+              <div class="cat-bar-wrap"><div class="cat-bar" style="width:${val!==null?Math.round((val/4)*100):0}%"></div></div>
+              <div class="cat-val">${val!==null?val.toFixed(1)+'/4':'—'}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      ` : `<p class="helper" style="margin-top:18px;">Aucune évaluation enregistrée pour l'instant.</p>` }
+
+      <h4 class="eval-section-title" style="margin:18px 0 8px;">Compétitions ouvertes aux inscriptions</h4>
+      ${ eligibleComps.length===0 ? `<p class="helper">Aucune compétition ouverte à l'inscription actuellement.</p>` :
+        eligibleComps.map(c=>{
+          const isIn = (c.participantIds||[]).includes(child.id);
+          const full = c.placesMax && (c.participantIds||[]).length >= c.placesMax && !isIn;
+          return `
+            <div class="row-between" style="padding:9px 0;border-bottom:1px solid var(--line);">
+              <div>
+                <strong style="font-size:.92rem;">${esc(c.nom)}</strong>
+                <div class="helper">${fmtDate(c.date)}${c.lieu?` · ${esc(c.lieu)}`:''}</div>
+              </div>
+              <button class="btn ${isIn?'danger':'secondary'} small" data-parent-toggle-registration="${c.id}|${child.id}" ${full?'disabled':''}>
+                ${isIn?'Se désinscrire':(full?'Complet':'Inscrire')}
+              </button>
+            </div>
+          `;
+        }).join('')
+      }
+
+      ${ registered.filter(c=>{ const r=(c.resultats&&c.resultats[child.id])||{}; return r.classement||r.score||r.commentaire; }).length>0 ? `
+        <h4 class="eval-section-title" style="margin:18px 0 8px;">Résultats</h4>
+        ${registered.map(c=>{
+          const res = (c.resultats && c.resultats[child.id]) || {};
+          if(!res.classement && !res.score && !res.commentaire) return '';
+          return `<div class="helper" style="padding:7px 0;border-bottom:1px solid var(--line);"><strong style="color:var(--ink);">${esc(c.nom)}</strong> (${fmtDate(c.date)}) — ${res.classement?`Classement : ${esc(res.classement)}. `:''}${res.score?`Score : ${esc(res.score)}. `:''}${res.commentaire?esc(res.commentaire):''}</div>`;
+        }).join('')}
+      ` : '' }
+    </div>
+  `;
+}
+
+function bindParentPortalEvents(){
+  document.querySelectorAll('[data-parent-toggle-registration]').forEach(el=>{
+    el.addEventListener('click', async ()=>{
+      const [compId, studentId] = el.dataset.parentToggleRegistration.split('|');
+      const c = state.competitions.find(x=>x.id===compId);
+      if(!c) return;
+      c.participantIds = c.participantIds || [];
+      const already = c.participantIds.includes(studentId);
+      if(already){
+        c.participantIds = c.participantIds.filter(id=>id!==studentId);
+      }else{
+        if(c.placesMax && c.participantIds.length >= c.placesMax){ showToast('Cette compétition est complète.'); return; }
+        c.participantIds.push(studentId);
+      }
+      await saveState();
+      showToast(already ? 'Désinscription enregistrée.' : 'Inscription enregistrée.');
+      showParentPortal();
+    });
+  });
+}
+
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+function applyTheme(){
+  const colors = (state.settings && state.settings.colors) || DEFAULT_COLORS;
+  const root = document.documentElement;
+  root.style.setProperty('--green-900', colors.header || DEFAULT_COLORS.header);
+  root.style.setProperty('--green-700', colors.boutons || DEFAULT_COLORS.boutons);
+  root.style.setProperty('--sand', colors.accent || DEFAULT_COLORS.accent);
+  root.style.setProperty('--cream', colors.fond || DEFAULT_COLORS.fond);
+  const logoSlot = document.getElementById('header-logo');
+  if(logoSlot){
+    const logo = state.settings && state.settings.logoDataUrl;
+    logoSlot.innerHTML = logo ? `<img src="${logo}" alt="Logo du club" style="width:34px;height:34px;object-fit:contain;border-radius:6px;">` : DEFAULT_LOGO_SVG;
+  }
+}
+
+/* ---------------------------------------------------------
+   TABS
+--------------------------------------------------------- */
+const TABS = [
+  {id:'dashboard', label:'Tableau de bord'},
+  {id:'groupes', label:'Groupes'},
+  {id:'coachs', label:'Coachs'},
+  {id:'eleves', label:'Élèves'},
+  {id:'presences', label:'Présences'},
+  {id:'alertes', label:'Alertes'},
+  {id:'performance', label:'Évaluation & Performance'},
+  {id:'bulletins', label:'Bulletins'},
+  {id:'competitions', label:'Compétitions'},
+  {id:'suggestions', label:'Suggestions & Roadmap'},
+  {id:'parametres', label:'Paramétrage'}
+];
+function renderTabs(){
+  const nav = document.getElementById('tabs');
+  nav.innerHTML = TABS.map(t=>
+    `<button data-tab="${t.id}" class="${ui.tab===t.id?'active':''}">${t.label}</button>`
+  ).join('');
+  nav.querySelectorAll('button').forEach(b=>{
+    b.addEventListener('click', ()=>{ ui.tab = b.dataset.tab; render(); });
+  });
+}
+
+/* ---------------------------------------------------------
+   HELPERS MÉTIER
+--------------------------------------------------------- */
+function studentsOfGroup(groupId){
+  return state.students.filter(s=>s.groupId===groupId);
+}
+function coachesOfGroup(groupId){
+  return state.coaches.filter(c=>(c.groupIds||[]).includes(groupId));
+}
+function coachById(id){ return state.coaches.find(c=>c.id===id); }
+function saisonById(id){ return state.saisons.find(s=>s.id===id); }
+function defaultSaisonLabel(){
+  const now = new Date();
+  const y = now.getFullYear();
+  return `${y}/${y+1}`;
+}
+function nextSaisonLabel(label){
+  const parts = (label||'').split('/').map(Number);
+  if(parts.length!==2 || isNaN(parts[0]) || isNaN(parts[1])) return defaultSaisonLabel();
+  return `${parts[0]+1}/${parts[1]+1}`;
+}
+function computeNextSaisonLabel(){
+  if(state.saisons.length===0) return defaultSaisonLabel();
+  const max = state.saisons.slice().sort((a,b)=>a.label.localeCompare(b.label)).pop();
+  return nextSaisonLabel(max.label);
+}
+function ensureDefaultSaison(){
+  let changed = false;
+  if(state.saisons.length===0){
+    const s = {id:uid(), label: defaultSaisonLabel()};
+    state.saisons.push(s);
+    state.saisonActiveId = s.id;
+    changed = true;
+  }
+  if(!state.saisonActiveId || !saisonById(state.saisonActiveId)){
+    state.saisonActiveId = state.saisons[0].id;
+    changed = true;
+  }
+  return changed;
+}
+function groupById(id){ return state.groups.find(g=>g.id===id); }
+function studentById(id){ return state.students.find(s=>s.id===id); }
+function sessionsOfGroup(groupId){
+  return state.sessions.filter(s=>s.groupId===groupId).sort((a,b)=>a.date.localeCompare(b.date));
+}
+
+// Calcule, pour un élève, la série d'absences consécutives la plus récente
+// Normalise une valeur de présence brute (booléen historique ou statut texte) vers 'present' | 'absent' | 'justifiee' | undefined
+function normalizePresence(raw){
+  if(raw === true) return 'present';
+  if(raw === false) return 'absent';
+  if(raw === undefined || raw === null || raw === '') return undefined;
+  return raw; // 'present' | 'absent' | 'justifiee'
+}
+
+function consecutiveAbsences(studentId){
+  const st = studentById(studentId);
+  if(!st) return {count:0,lastPresent:null};
+  const sess = sessionsOfGroup(st.groupId).filter(s=>s.date <= todayISO());
+  let count = 0;
+  let lastPresent = null;
+  for(let i=sess.length-1;i>=0;i--){
+    const rec = normalizePresence(sess[i].presences ? sess[i].presences[studentId] : undefined);
+    if(rec === undefined) continue; // séance sans info pour cet élève -> on ignore
+    if(rec === 'justifiee') continue; // absence justifiée -> ne compte pas dans la série d'alertes
+    if(rec === 'present'){ lastPresent = sess[i].date; break; }
+    count++;
+  }
+  return {count, lastPresent};
+}
+function computeAlerts(threshold){
+  const list = [];
+  state.students.forEach(st=>{
+    const {count, lastPresent} = consecutiveAbsences(st.id);
+    if(count >= threshold){
+      list.push({student:st, count, lastPresent});
+    }
+  });
+  list.sort((a,b)=>b.count-a.count);
+  return list;
+}
+
+/* ---------------------------------------------------------
+   RENDER PRINCIPAL
+--------------------------------------------------------- */
+function render(){
+  renderTabs();
+  const app = document.getElementById('app');
+  if(ui.tab==='dashboard') app.innerHTML = viewDashboard();
+  else if(ui.tab==='groupes') app.innerHTML = viewGroupes();
+  else if(ui.tab==='coachs') app.innerHTML = viewCoachs();
+  else if(ui.tab==='eleves') app.innerHTML = viewEleves();
+  else if(ui.tab==='presences') app.innerHTML = viewPresences();
+  else if(ui.tab==='alertes') app.innerHTML = viewAlertes();
+  else if(ui.tab==='performance') app.innerHTML = viewPerformance();
+  else if(ui.tab==='bulletins') app.innerHTML = viewBulletins();
+  else if(ui.tab==='competitions') app.innerHTML = viewCompetitions();
+  else if(ui.tab==='suggestions') app.innerHTML = viewSuggestions();
+  else if(ui.tab==='parametres') app.innerHTML = viewParametres();
+  bindEvents();
+}
+
+/* ---------------------------------------------------------
+   VUE : DASHBOARD
+--------------------------------------------------------- */
+function sessionsInDashPeriod(){
+  return state.sessions.filter(s=>{
+    if(ui.dashPeriodStart && s.date < ui.dashPeriodStart) return false;
+    if(ui.dashPeriodEnd && s.date > ui.dashPeriodEnd) return false;
+    return true;
+  });
+}
+function attendanceRate(sessions){
+  let present = 0, total = 0;
+  sessions.forEach(s=>{
+    Object.values(s.presences || {}).forEach(raw=>{
+      const v = normalizePresence(raw);
+      if(v===undefined || v==='justifiee') return; // absences justifiées exclues du calcul du taux
+      if(v==='present') present++;
+      total++;
+    });
+  });
+  return total > 0 ? Math.round((present/total)*100) : null;
+}
+function evaluatedStudentsInDashPeriod(){
+  const ids = new Set();
+  state.performance.forEach(p=>{
+    if(!p.sections) return;
+    if(ui.dashPeriodStart && p.date < ui.dashPeriodStart) return;
+    if(ui.dashPeriodEnd && p.date > ui.dashPeriodEnd) return;
+    ids.add(p.studentId);
+  });
+  return ids.size;
+}
+function stagesInDashPeriod(){
+  return state.stages.filter(st=>{
+    if(ui.dashPeriodStart && st.dateDebut < ui.dashPeriodStart) return false;
+    if(ui.dashPeriodEnd && st.dateDebut > ui.dashPeriodEnd) return false;
+    return true;
+  });
+}
+
+function viewDashboard(){
+  const nbGroupes = state.groups.length;
+  const nbEleves = state.students.length;
+  const alerts = computeAlerts(2);
+  const nbAlerts = alerts.length;
+  const topAlerts = alerts.slice(0,5);
+  const nbObjectifsActifs = state.objectifs.filter(o=>o.statut==='en_cours').length;
+  const nbCoachs = state.coaches.length;
+
+  const periodSessions = sessionsInDashPeriod();
+  const globalRate = attendanceRate(periodSessions);
+  const nbEvaluesPeriode = evaluatedStudentsInDashPeriod();
+  const hasPeriodFilter = !!(ui.dashPeriodStart || ui.dashPeriodEnd);
+
+  const groupRates = state.groups.map(g=>{
+    const gSessions = periodSessions.filter(s=>s.groupId===g.id);
+    return { group:g, nbSeances:gSessions.length, rate: attendanceRate(gSessions) };
+  });
+
+  const periodStages = stagesInDashPeriod();
+  const nbStagesSansCoach = periodStages.filter(st=>!st.coachId).length;
+  const stagesByCoach = state.coaches.map(c=>({
+    coach: c,
+    nb: periodStages.filter(st=>st.coachId===c.id).length
+  })).filter(x=>x.nb>0).sort((a,b)=>b.nb-a.nb);
+
+  return `
+    <h2 class="section-title">Vue d'ensemble</h2>
+    <p class="section-sub">L'essentiel de la semaine, en un coup d'œil.</p>
+    <div class="stat-row">
+      <div class="stat"><div class="num">${nbGroupes}</div><div class="label">Groupes</div></div>
+      <div class="stat"><div class="num">${nbEleves}</div><div class="label">Élèves</div></div>
+      <div class="stat"><div class="num">${nbCoachs}</div><div class="label">Coachs</div></div>
+      <div class="stat alert"><div class="num">${nbAlerts}</div><div class="label">Alertes actives</div></div>
+      <div class="stat"><div class="num">${nbObjectifsActifs}</div><div class="label">Objectifs en cours</div></div>
+    </div>
+
+    <div class="card">
+      <div class="row-between" style="margin-bottom:6px;">
+        <h3 style="margin:0;font-family:'Fraunces',serif;color:var(--green-900);">Présence &amp; évaluation</h3>
+        ${ hasPeriodFilter ? `<button class="btn secondary small" id="btn-dash-reset-period">Toute la période</button>` : '' }
+      </div>
+      <div class="form-grid" style="margin-bottom:14px;">
+        <div class="field"><label>Du</label><input type="date" id="input-dash-start" value="${ui.dashPeriodStart||''}"></div>
+        <div class="field"><label>Au</label><input type="date" id="input-dash-end" value="${ui.dashPeriodEnd||''}"></div>
+      </div>
+      <p class="helper" style="margin-bottom:14px;">${ hasPeriodFilter ? `Période sélectionnée : ${ui.dashPeriodStart?fmtDate(ui.dashPeriodStart):'début'} → ${ui.dashPeriodEnd?fmtDate(ui.dashPeriodEnd):"aujourd'hui"}` : 'Toute la période (aucun filtre appliqué).' }</p>
+
+      <div class="stat-row" style="margin-bottom:16px;">
+        <div class="stat"><div class="num">${globalRate!==null?globalRate+'%':'—'}</div><div class="label">Taux de présence global</div></div>
+        <div class="stat"><div class="num">${nbEvaluesPeriode}/${nbEleves}</div><div class="label">Élèves ayant eu une évaluation</div></div>
+      </div>
+
+      ${ groupRates.length===0 ? `<div class="empty">Aucun groupe créé pour l'instant.</div>` :
+        `<table><thead><tr><th>Groupe</th><th>Séances (période)</th><th>Taux de présence</th></tr></thead><tbody>
+          ${groupRates.map(g=>`
+            <tr>
+              <td>${esc(g.group.nom)}</td>
+              <td>${g.nbSeances}</td>
+              <td>${g.rate!==null?`<span class="pill ${g.rate>=80?'ok':g.rate>=50?'warn':'bad'}">${g.rate}%</span>`:'<span class="helper">aucune séance</span>'}</td>
+            </tr>
+          `).join('')}
+        </tbody></table>`
+      }
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0 0 10px;font-family:'Fraunces',serif;color:var(--green-900);">Stages par coach</h3>
+      ${ periodStages.length===0 ? `<div class="empty">Aucun stage sur cette période.</div>` :
+        `<table><thead><tr><th>Coach</th><th>Stages (période)</th></tr></thead><tbody>
+          ${stagesByCoach.map(x=>`
+            <tr>
+              <td>${esc(x.coach.prenom)} ${esc(x.coach.nom)}</td>
+              <td>${x.nb}</td>
+            </tr>
+          `).join('')}
+          ${ nbStagesSansCoach>0 ? `<tr><td><span class="helper">Sans coach assigné</span></td><td>${nbStagesSansCoach}</td></tr>` : '' }
+        </tbody></table>`
+      }
+    </div>
+
+    <div class="card">
+      <div class="row-between" style="margin-bottom:10px;">
+        <h3 style="margin:0;font-family:'Fraunces',serif;color:var(--green-900);">Alertes récentes</h3>
+        <button class="btn secondary small" data-goto="alertes">Voir tout</button>
+      </div>
+      ${ topAlerts.length===0 ? `<div class="empty">Aucune alerte pour le moment. 👍</div>` :
+        `<table><thead><tr><th>Élève</th><th>Groupe</th><th>Absences</th><th>Dernière présence</th></tr></thead><tbody>
+          ${topAlerts.map(a=>`
+            <tr>
+              <td>${esc(a.student.prenom)} ${esc(a.student.nom)}</td>
+              <td>${esc(groupById(a.student.groupId)?.nom || '—')}</td>
+              <td><span class="pill ${a.count>=3?'bad':'warn'}">${a.count} semaine(s)</span></td>
+              <td>${a.lastPresent ? fmtDate(a.lastPresent) : 'jamais enregistrée'}</td>
+            </tr>`).join('')}
+        </tbody></table>`
+      }
+    </div>
+    ${ nbGroupes===0 ? `<div class="empty">Commencez par créer un groupe dans l'onglet <strong>Groupes &amp; élèves</strong>.</div>` : '' }
+  `;
+}
+
+/* ---------------------------------------------------------
+   VUE : GROUPES & ÉLÈVES
+--------------------------------------------------------- */
+function viewGroupes(){
+  return `
+    <h2 class="section-title">Groupes</h2>
+    <p class="section-sub">Créez vos groupes de cours et organisez vos stages. La gestion des élèves se fait dans l'onglet « Élèves ».</p>
+    <div class="inline-actions" style="margin-bottom:16px;">
+      <button class="btn ${ui.groupesSubTab==='groupes'?'':'secondary'} small" data-groupes-subtab="groupes">Groupes</button>
+      <button class="btn ${ui.groupesSubTab==='stages'?'':'secondary'} small" data-groupes-subtab="stages">Stages</button>
+    </div>
+    ${ ui.groupesSubTab==='stages' ? viewStages() : viewGroupesListe() }
+  `;
+}
+
+function viewGroupesListe(){
+  const selSaisonId = ui.selGroupSaison || state.saisonActiveId;
+  const sel = ui.selGroupManage && groupById(ui.selGroupManage) ? ui.selGroupManage : (state.groups[0]?.id || null);
+  ui.selGroupManage = sel;
+  const filteredGroups = state.groups.filter(g=>(g.saisonId||state.saisonActiveId)===selSaisonId);
+  const saisonLabel = saisonById(selSaisonId)?.label || '—';
+
+  return `
+    <div class="card">
+      <div class="form-grid" style="margin-bottom:0;">
+        <div class="field">
+          <label>Saison affichée</label>
+          <select id="select-groupes-saison">
+            ${state.saisons.map(s=>`<option value="${s.id}" ${s.id===selSaisonId?'selected':''}>${esc(s.label)}${s.id===state.saisonActiveId?' (active)':''}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <p class="helper" style="margin-top:10px;">Les nouveaux groupes créés sont rattachés à cette saison. Gérez la liste complète des saisons dans l'onglet « Paramétrage ».</p>
+      ${ filteredGroups.length>0 ? `<button class="btn secondary small" id="btn-duplicate-saison-groups">Dupliquer ces groupes vers la saison suivante</button>` : '' }
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;font-family:'Fraunces',serif;color:var(--green-900);">Nouveau groupe — saison ${esc(saisonLabel)}</h3>
+      <form id="form-add-group">
+        <div class="form-grid">
+          <div class="field"><label>Nom du groupe</label><input name="nom" placeholder="Ex : Poussins débutants" required></div>
+          <div class="field"><label>Jour du cours</label>
+            <select name="jour">${JOURS.map(j=>`<option>${j}</option>`).join('')}</select>
+          </div>
+          <div class="field"><label>Horaire</label><input name="heure" type="time" value="14:00" required></div>
+        </div>
+        <button class="btn" type="submit">Créer le groupe</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;font-family:'Fraunces',serif;color:var(--green-900);">Groupes — saison ${esc(saisonLabel)}</h3>
+      ${filteredGroups.length===0 ? `<div class="empty">Aucun groupe pour cette saison.</div>` :
+        filteredGroups.map(g=>`
+          <div class="group-card ${g.id===sel?'active':''}" data-select-group="${g.id}">
+            <div>
+              <div class="name">${esc(g.nom)}</div>
+              <div class="meta">${g.jour} · ${g.heure} · ${studentsOfGroup(g.id).length} élève(s)${coachesOfGroup(g.id).length?` · Coach : ${coachesOfGroup(g.id).map(c=>esc(c.prenom)+' '+esc(c.nom)).join(', ')}`:''}</div>
+            </div>
+            <div class="inline-actions">
+              <button class="btn secondary small" data-goto-eleves="${g.id}">Voir les élèves</button>
+              <button class="btn danger small" data-delete-group="${g.id}">Supprimer</button>
+            </div>
+          </div>
+        `).join('')
+      }
+    </div>
+  `;
+}
+
+/* ---------------------------------------------------------
+   VUE : STAGES
+--------------------------------------------------------- */
+function viewStages(){
+  const selSaisonId = ui.selGroupSaison || state.saisonActiveId;
+  const saisonLabel = saisonById(selSaisonId)?.label || '—';
+  const stages = state.stages.filter(st=>(st.saisonId||state.saisonActiveId)===selSaisonId).sort((a,b)=>(b.dateDebut||'').localeCompare(a.dateDebut||''));
+
+  return `
+    <div class="card">
+      <h3 class="perf-h">Nouveau stage — saison ${esc(saisonLabel)}</h3>
+      <form id="form-add-stage">
+        <div class="form-grid">
+          <div class="field"><label>Nom du stage</label><input type="text" name="nom" placeholder="Ex : Stage de printemps" required></div>
+          <div class="field"><label>Date de début</label><input type="date" name="dateDebut" required></div>
+          <div class="field"><label>Date de fin</label><input type="date" name="dateFin" required></div>
+          <div class="field"><label>Coach</label>
+            ${ state.coaches.length>0 ? `
+              <select name="coachId">
+                <option value="">— Non renseigné —</option>
+                ${state.coaches.map(c=>`<option value="${c.id}">${esc(c.prenom)} ${esc(c.nom)}</option>`).join('')}
+              </select>` :
+              `<span class="helper">Créez des coachs dans l'onglet « Coachs ».</span>`
+            }
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:12px;"><label>Objectifs du stage</label><textarea name="objectifs" rows="2" placeholder="Ex : Travail du petit jeu et mise en situation de parcours"></textarea></div>
+        <button class="btn" type="submit">Créer le stage</button>
+      </form>
+    </div>
+
+    ${ stages.length===0 ? `<div class="card"><div class="empty">Aucun stage pour cette saison.</div></div>` :
+      stages.map(st=>viewStageCard(st)).join('')
+    }
+  `;
+}
+
+function viewStageCard(st){
+  const opened = ui.openStageId === st.id;
+  const participants = (st.participantIds||[]).map(id=>studentById(id)).filter(Boolean);
+  const coach = st.coachId ? coachById(st.coachId) : null;
+  return `
+    <div class="card">
+      <div class="row-between">
+        <div>
+          <div class="name" style="font-weight:700;color:var(--green-900);">${esc(st.nom)}</div>
+          <div class="meta helper">${fmtDate(st.dateDebut)} → ${fmtDate(st.dateFin)} · ${participants.length} participant(s)${coach?` · Coach : ${esc(coach.prenom)} ${esc(coach.nom)}`:''}</div>
+        </div>
+        <div class="inline-actions">
+          <button class="btn secondary small" data-toggle-stage="${st.id}">${opened?'Fermer':'Gérer'}</button>
+          <button class="btn danger small" data-delete-stage="${st.id}">Supprimer</button>
+        </div>
+      </div>
+      ${ st.objectifs ? `<p class="helper" style="margin-top:8px;">${esc(st.objectifs)}</p>` : '' }
+      ${ opened ? `
+        <div style="margin-top:14px;border-top:1px solid var(--line);padding-top:14px;">
+          <h4 class="eval-section-title" style="margin-bottom:8px;">Participants</h4>
+          ${ state.students.length===0 ? `<div class="empty">Aucun élève créé pour l'instant.</div>` : `
+          <div style="max-height:220px;overflow-y:auto;border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:16px;">
+            ${state.students.slice().sort((a,b)=>(a.nom+a.prenom).localeCompare(b.nom+b.prenom)).map(s=>`
+              <label style="display:flex;align-items:center;gap:8px;font-weight:400;margin-bottom:6px;font-size:.88rem;">
+                <input type="checkbox" data-stage-participant="${st.id}|${s.id}" ${(st.participantIds||[]).includes(s.id)?'checked':''}>
+                <span>${esc(s.prenom)} ${esc(s.nom)} <span class="helper">(${esc(groupById(s.groupId)?.nom||'sans groupe')})</span></span>
+              </label>
+            `).join('')}
+          </div>`}
+
+          ${ participants.length===0 ? `<div class="empty">Sélectionnez des participants ci-dessus pour suivre leurs résultats.</div>` :
+            `<h4 class="eval-section-title" style="margin-bottom:8px;">Résultats individuels</h4>` +
+            participants.map(p=>{
+              const evalsInStage = state.performance.filter(pf=>pf.studentId===p.id && pf.sections && pf.date>=st.dateDebut && pf.date<=st.dateFin).sort((a,b)=>a.date.localeCompare(b.date));
+              const commentaire = (st.commentaires && st.commentaires[p.id]) || '';
+              return `
+                <div class="eval-history-card">
+                  <div class="row-between">
+                    <strong>${esc(p.prenom)} ${esc(p.nom)}</strong>
+                    <button class="btn secondary small" data-goto-eval-student="${p.id}">Ajouter une évaluation</button>
+                  </div>
+                  ${ evalsInStage.length===0 ? `<p class="helper" style="margin-top:6px;">Aucune évaluation enregistrée sur la période du stage.</p>` :
+                    `<div class="helper" style="margin-top:6px;">${evalsInStage.map(e=>{
+                      const avg = globalAverage(e.sections, e.niveau);
+                      return `${fmtDate(e.date)} : ${avg!==null?avg.toFixed(1)+'/4':'—'}`;
+                    }).join(' · ')}</div>`
+                  }
+                  <div class="field" style="margin-top:8px;margin-bottom:0;">
+                    <label>Commentaire de stage</label>
+                    <textarea rows="2" data-stage-comment="${st.id}|${p.id}" placeholder="Ressenti, progrès observés pendant le stage...">${esc(commentaire)}</textarea>
+                  </div>
+                </div>
+              `;
+            }).join('')
+          }
+        </div>
+      ` : '' }
+    </div>
+  `;
+}
+
+/* ---------------------------------------------------------
+   VUE : COACHS
+--------------------------------------------------------- */
+function viewCoachs(){
+  return `
+    <h2 class="section-title">Coachs</h2>
+    <p class="section-sub">Créez vos coachs et assignez-les aux groupes qu'ils encadrent.</p>
+
+    <div class="card">
+      <h3 class="perf-h">Nouveau coach</h3>
+      <form id="form-add-coach">
+        <div class="form-grid">
+          <div class="field"><label>Prénom</label><input name="prenom" required></div>
+          <div class="field"><label>Nom</label><input name="nom" required></div>
+          <div class="field"><label>E-mail (optionnel)</label><input name="email" type="email" placeholder="coach@exemple.fr"></div>
+        </div>
+        <button class="btn" type="submit">Ajouter le coach</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3 class="perf-h">Coachs</h3>
+      ${ state.coaches.length===0 ? `<div class="empty">Aucun coach créé pour l'instant.</div>` :
+        state.coaches.map(c=>{
+          const assignedGroups = state.groups.filter(g=>(c.groupIds||[]).includes(g.id));
+          const editing = ui.editingCoachId === c.id;
+          return `
+            <div class="coach-card">
+              <div class="row-between">
+                <div>
+                  <div class="name">${esc(c.prenom)} ${esc(c.nom)}</div>
+                  <div class="meta">${esc(c.email)||'pas d\'e-mail renseigné'}</div>
+                </div>
+                <div class="inline-actions">
+                  <button class="btn secondary small" data-toggle-edit-coach="${c.id}">${editing?'Fermer':'Gérer les groupes'}</button>
+                  <button class="btn danger small" data-delete-coach="${c.id}">Supprimer</button>
+                </div>
+              </div>
+              <div style="margin-top:8px;">
+                ${ assignedGroups.length===0 ? `<span class="helper">Aucun groupe assigné</span>` :
+                  assignedGroups.map(g=>`<span class="pill ok" style="margin-right:6px;">${esc(g.nom)}</span>`).join('')
+                }
+              </div>
+              ${ editing ? `
+                <div style="margin-top:12px;border-top:1px solid var(--line);padding-top:12px;">
+                  ${ state.groups.length===0 ? `<div class="helper">Créez d'abord des groupes dans l'onglet « Groupes ».</div>` :
+                    state.groups.map(g=>`
+                      <label style="display:flex;align-items:center;gap:8px;font-weight:400;margin-bottom:6px;font-size:.88rem;">
+                        <input type="checkbox" data-coach-group="${c.id}|${g.id}" ${(c.groupIds||[]).includes(g.id)?'checked':''}>
+                        <span>${esc(g.nom)} <span class="helper">(${g.jour} ${g.heure})</span></span>
+                      </label>
+                    `).join('')
+                  }
+                </div>` : ''}
+            </div>
+          `;
+        }).join('')
+      }
+    </div>
+  `;
+}
+
+/* ---------------------------------------------------------
+   VUE : ÉLÈVES (module de gestion dédié)
+--------------------------------------------------------- */
+function viewEleves(){
+  if(state.groups.length===0){
+    return `
+      <h2 class="section-title">Gestion des élèves</h2>
+      <p class="section-sub">Le carnet complet de vos élèves, tous groupes confondus.</p>
+      <div class="empty">Créez d'abord un groupe dans l'onglet « Groupes » avant d'ajouter des élèves.</div>
+    `;
+  }
+
+  const search = ui.elevesSearch.trim().toLowerCase();
+  let list = state.students.slice();
+  if(ui.elevesFilterGroup !== 'all') list = list.filter(s=>s.groupId===ui.elevesFilterGroup);
+  if(search) list = list.filter(s=>
+    (s.prenom+' '+s.nom).toLowerCase().includes(search) ||
+    (s.parentEmail||'').toLowerCase().includes(search)
+  );
+  list.sort((a,b)=> (a.nom+a.prenom).localeCompare(b.nom+b.prenom));
+  const saisonLabelDash = (saisonById(state.saisonActiveId)?.label || defaultSaisonLabel()).replace('/','-');
+
+  return `
+    <h2 class="section-title">Gestion des élèves</h2>
+    <p class="section-sub">Le carnet complet de vos élèves, tous groupes confondus : ajout, modification, changement de groupe, suppression.</p>
+
+    <div class="card">
+      <h3 style="margin-top:0;font-family:'Fraunces',serif;color:var(--green-900);">Ajouter un élève</h3>
+      <form id="form-add-student-eleves">
+        <div class="form-grid">
+          <div class="field"><label>Prénom</label><input name="prenom" required></div>
+          <div class="field"><label>Nom</label><input name="nom" required></div>
+          <div class="field"><label>Date de naissance</label><input name="dateNaissance" type="date"></div>
+          <div class="field"><label>Groupe</label>
+            <select name="groupId">${state.groups.map(g=>`<option value="${g.id}">${esc(g.nom)}</option>`).join('')}</select>
+          </div>
+          <div class="field"><label>Niveau (évaluation)</label>
+            <select name="niveau">${NIVEAUX.map(n=>`<option value="${n.key}" ${n.key==='debutant'?'selected':''}>${n.label}</option>`).join('')}</select>
+          </div>
+          <div class="field"><label>Numéro de licence</label><input name="numeroLicence" type="text" placeholder="Ex : 1234567"></div>
+          <div class="field"><label>E-mail parent (optionnel)</label><input name="email" type="email" placeholder="parent@exemple.fr"></div>
+        </div>
+        <div class="field" style="grid-column:1 / -1;margin-bottom:10px;">
+          <label style="display:flex;align-items:center;gap:8px;font-weight:400;">
+            <input type="checkbox" name="attestationCharte">
+            <span>Attestation Charte et Autorisations EDG ${esc(saisonLabelDash)}</span>
+          </label>
+        </div>
+        <div class="field" style="grid-column:1 / -1;margin-bottom:12px;">
+          <label style="display:flex;align-items:center;gap:8px;font-weight:400;">
+            <input type="checkbox" name="attestationAccident">
+            <span>Attestation Autorisation Parentale : Accident</span>
+          </label>
+        </div>
+        <button class="btn" type="submit">Ajouter l'élève</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="form-grid" style="margin-bottom:6px;">
+        <div class="field"><label>Filtrer par groupe</label>
+          <select id="select-eleves-filter-group">
+            <option value="all" ${ui.elevesFilterGroup==='all'?'selected':''}>Tous les groupes</option>
+            ${state.groups.map(g=>`<option value="${g.id}" ${ui.elevesFilterGroup===g.id?'selected':''}>${esc(g.nom)}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field"><label>Rechercher</label>
+          <input id="input-eleves-search" type="text" placeholder="Nom, prénom ou e-mail…" value="${esc(ui.elevesSearch)}">
+        </div>
+      </div>
+
+      ${ list.length===0 ? `<div class="empty">Aucun élève ne correspond.</div>` :
+        `<table><thead><tr><th>Prénom</th><th>Nom</th><th>Naissance</th><th>Groupe</th><th>Niveau</th><th>Licence</th><th>E-mail parent</th><th>Charte EDG</th><th>Autor. accident</th><th></th></tr></thead><tbody>
+          ${list.map(s=>{
+            if(ui.editingStudentId === s.id){
+              return `
+                <tr>
+                  <td colspan="10">
+                    <form id="form-edit-student" data-student-id="${s.id}">
+                      <div class="form-grid">
+                        <div class="field"><label>Prénom</label><input name="prenom" value="${esc(s.prenom)}" required></div>
+                        <div class="field"><label>Nom</label><input name="nom" value="${esc(s.nom)}" required></div>
+                        <div class="field"><label>Date de naissance</label><input name="dateNaissance" type="date" value="${esc(s.dateNaissance)||''}"></div>
+                        <div class="field"><label>Groupe</label>
+                          <select name="groupId">${state.groups.map(g=>`<option value="${g.id}" ${g.id===s.groupId?'selected':''}>${esc(g.nom)}</option>`).join('')}</select>
+                        </div>
+                        <div class="field"><label>Niveau (évaluation)</label>
+                          <select name="niveau">${NIVEAUX.map(n=>`<option value="${n.key}" ${(s.niveau||'debutant')===n.key?'selected':''}>${n.label}</option>`).join('')}</select>
+                        </div>
+                        <div class="field"><label>Numéro de licence</label><input name="numeroLicence" type="text" value="${esc(s.numeroLicence)||''}" placeholder="Ex : 1234567"></div>
+                        <div class="field"><label>E-mail parent</label><input name="email" type="email" value="${esc(s.parentEmail)}"></div>
+                      </div>
+                      <div class="field" style="margin-bottom:10px;">
+                        <label style="display:flex;align-items:center;gap:8px;font-weight:400;">
+                          <input type="checkbox" name="attestationCharte" ${s.attestationCharte?'checked':''}>
+                          <span>Attestation Charte et Autorisations EDG ${esc(saisonLabelDash)}</span>
+                        </label>
+                      </div>
+                      <div class="field" style="margin-bottom:12px;">
+                        <label style="display:flex;align-items:center;gap:8px;font-weight:400;">
+                          <input type="checkbox" name="attestationAccident" ${s.attestationAccident?'checked':''}>
+                          <span>Attestation Autorisation Parentale : Accident</span>
+                        </label>
+                      </div>
+                      <div class="inline-actions">
+                        <button class="btn small" type="submit">Enregistrer</button>
+                        <button class="btn secondary small" type="button" data-cancel-edit-student="1">Annuler</button>
+                      </div>
+                    </form>
+                  </td>
+                </tr>`;
+            }
+            return `
+              <tr>
+                <td>${esc(s.prenom)}</td>
+                <td>${esc(s.nom)}</td>
+                <td>${s.dateNaissance ? fmtDate(s.dateNaissance) : '<span class="helper">—</span>'}</td>
+                <td>${esc(groupById(s.groupId)?.nom || '—')}</td>
+                <td><span class="pill ok">${esc(niveauLabel(s.niveau||'debutant'))}</span></td>
+                <td>${esc(s.numeroLicence)||'<span class="helper">—</span>'}</td>
+                <td>${esc(s.parentEmail)||'<span class="helper">non renseigné</span>'}</td>
+                <td>${s.attestationCharte ? `<span class="pill ok">✓</span>` : `<span class="pill bad">—</span>`}</td>
+                <td>${s.attestationAccident ? `<span class="pill ok">✓</span>` : `<span class="pill bad">—</span>`}</td>
+                <td>
+                  <div class="inline-actions">
+                    <button class="btn secondary small" data-edit-student="${s.id}">Modifier</button>
+                    <button class="btn danger small" data-delete-student="${s.id}">Retirer</button>
+                  </div>
+                </td>
+              </tr>`;
+          }).join('')}
+        </tbody></table>`
+      }
+    </div>
+  `;
+}
+
+/* ---------------------------------------------------------
+   VUE : PRÉSENCES
+--------------------------------------------------------- */
+function viewPresences(){
+  const groupId = ui.selGroupAttendance && groupById(ui.selGroupAttendance) ? ui.selGroupAttendance : (state.groups[0]?.id || null);
+  ui.selGroupAttendance = groupId;
+  const eleves = groupId ? studentsOfGroup(groupId) : [];
+  const date = ui.attendanceDate;
+  const session = groupId ? state.sessions.find(s=>s.groupId===groupId && s.date===date) : null;
+
+  const past = groupId ? sessionsOfGroup(groupId).slice().reverse().slice(0,8) : [];
+
+  return `
+    <h2 class="section-title">Présences</h2>
+    <p class="section-sub">Choisissez un groupe et une date de séance, puis indiquez le statut de chaque élève (présent, absent, ou absence justifiée).</p>
+
+    <div class="card">
+      <div class="form-grid" style="align-items:end;">
+        <div class="field"><label>Groupe</label>
+          <select id="select-group-attendance">
+            ${state.groups.map(g=>`<option value="${g.id}" ${g.id===groupId?'selected':''}>${esc(g.nom)}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field"><label>Date de la séance</label>
+          <input type="date" id="input-attendance-date" value="${date}">
+        </div>
+      </div>
+      ${ !groupId ? `<div class="empty">Créez d'abord un groupe dans l'onglet « Groupes &amp; élèves ».</div>` :
+        eleves.length===0 ? `<div class="empty">Ce groupe n'a pas encore d'élève.</div>` :
+        `<form id="form-attendance">
+          ${ state.coaches.length===0 ? `<p class="helper" style="margin-bottom:12px;">Astuce : créez des coachs dans l'onglet « Coachs » pour associer cette séance à un coach.</p>` : `
+          <div class="field" style="max-width:340px;margin-bottom:14px;">
+            <label>Coach de la séance</label>
+            <select name="coachId">
+              <option value="">— Non renseigné —</option>
+              ${state.coaches.map(c=>{
+                const defaultPick = !session && coachesOfGroup(groupId).length===1 && coachesOfGroup(groupId)[0].id===c.id;
+                const selected = session ? session.coachId===c.id : defaultPick;
+                return `<option value="${c.id}" ${selected?'selected':''}>${esc(c.prenom)} ${esc(c.nom)}</option>`;
+              }).join('')}
+            </select>
+          </div>`}
+          <div class="inline-actions" style="margin-bottom:10px;">
+            <button type="button" class="btn secondary small" id="btn-mark-all-present">✓ Tous présents</button>
+            <button type="button" class="btn secondary small" id="btn-mark-all-absent">Tout décocher</button>
+          </div>
+          <table>
+            <thead><tr><th>Élève</th><th style="text-align:center;">Statut</th></tr></thead>
+            <tbody>
+              ${eleves.map(s=>{
+                const status = (session && session.presences ? normalizePresence(session.presences[s.id]) : undefined) || 'absent';
+                return `<tr data-student-row="${s.id}">
+                  <td>${esc(s.prenom)} ${esc(s.nom)}</td>
+                  <td style="text-align:center;">
+                    <input type="hidden" name="${s.id}" value="${status}">
+                    <div class="presence-toggle">
+                      <button type="button" class="ptoggle-btn ${status==='present'?'active-present':''}" data-presence-set="${s.id}|present">Présent</button>
+                      <button type="button" class="ptoggle-btn ${status==='absent'?'active-absent':''}" data-presence-set="${s.id}|absent">Absent</button>
+                      <button type="button" class="ptoggle-btn ${status==='justifiee'?'active-justifiee':''}" data-presence-set="${s.id}|justifiee">Justifiée</button>
+                    </div>
+                  </td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+          <div style="margin-top:14px;"><button class="btn" type="submit">Enregistrer les présences</button></div>
+        </form>`
+      }
+    </div>
+
+    ${ groupId && past.length>0 ? `
+    <div class="card">
+      <h3 style="margin-top:0;font-family:'Fraunces',serif;color:var(--green-900);">Séances récentes</h3>
+      <table><thead><tr><th>Date</th><th>Coach</th><th>Présents</th><th>Absents</th><th>Justifiées</th></tr></thead><tbody>
+        ${past.map(s=>{
+          const vals = Object.values(s.presences||{}).map(normalizePresence);
+          const present = vals.filter(v=>v==='present').length;
+          const absent = vals.filter(v=>v==='absent').length;
+          const justifiee = vals.filter(v=>v==='justifiee').length;
+          const coach = s.coachId ? coachById(s.coachId) : null;
+          return `<tr><td>${fmtDate(s.date)}</td><td>${coach?esc(coach.prenom)+' '+esc(coach.nom):'—'}</td><td>${present}</td><td>${absent}</td><td>${justifiee}</td></tr>`;
+        }).join('')}
+      </tbody></table>
+    </div>` : ''}
+  `;
+}
+
+/* ---------------------------------------------------------
+   VUE : ALERTES
+--------------------------------------------------------- */
+function viewAlertes(){
+  const alerts = computeAlerts(ui.alertThreshold);
+  return `
+    <h2 class="section-title">Alertes d'absence</h2>
+    <p class="section-sub">Élèves absents plusieurs semaines de suite, à recontacter.</p>
+    <div class="card">
+      <div class="field" style="max-width:260px;">
+        <label>Seuil d'alerte</label>
+        <select id="select-threshold">
+          <option value="2" ${ui.alertThreshold==2?'selected':''}>2 semaines consécutives</option>
+          <option value="3" ${ui.alertThreshold==3?'selected':''}>3 semaines consécutives</option>
+        </select>
+      </div>
+    </div>
+    <div class="card">
+      ${ alerts.length===0 ? `<div class="empty">Aucun élève ne dépasse ce seuil d'absence. 👍</div>` :
+        `<table><thead><tr><th>Élève</th><th>Groupe</th><th>Absences consécutives</th><th>Dernière présence</th></tr></thead><tbody>
+          ${alerts.map(a=>`
+            <tr>
+              <td>${esc(a.student.prenom)} ${esc(a.student.nom)}</td>
+              <td>${esc(groupById(a.student.groupId)?.nom || '—')}</td>
+              <td><span class="pill ${a.count>=3?'bad':'warn'}">${a.count} semaine(s)</span></td>
+              <td>${a.lastPresent ? fmtDate(a.lastPresent) : 'jamais enregistrée'}</td>
+            </tr>`).join('')}
+        </tbody></table>`
+      }
+    </div>
+    <p class="helper">Le calcul se base sur les séances déjà enregistrées dans l'onglet Présences pour le groupe de chaque élève.</p>
+  `;
+}
+
+/* ---------------------------------------------------------
+   VUE : PERFORMANCE
+--------------------------------------------------------- */
+function sectionAverage(sections, sectionKey, niveau){
+  const grid = gridFor(niveau);
+  const section = grid.find(s=>s.key===sectionKey);
+  if(!section || !sections || !sections[sectionKey]) return null;
+  const vals = section.criteria.map(c=>sections[sectionKey][c.key]).filter(v=>v!==undefined && v!==null && v!=='');
+  if(vals.length===0) return null;
+  return vals.reduce((a,b)=>a+Number(b),0)/vals.length;
+}
+function globalAverage(sections, niveau){
+  if(!sections) return null;
+  const grid = gridFor(niveau);
+  const avgs = grid.map(s=>sectionAverage(sections,s.key,niveau)).filter(v=>v!==null);
+  if(avgs.length===0) return null;
+  return avgs.reduce((a,b)=>a+b,0)/avgs.length;
+}
+
+function viewPerformance(){
+  return `
+    <h2 class="section-title">Évaluation & Performance</h2>
+    <p class="section-sub">Évaluations techniques, objectifs individuels et statistiques pédagogiques.</p>
+    <div class="inline-actions" style="margin-bottom:16px;">
+      <button class="btn ${ui.performanceSubTab==='fiche'?'':'secondary'} small" data-perf-subtab="fiche">Fiche élève</button>
+      <button class="btn ${ui.performanceSubTab==='stats'?'':'secondary'} small" data-perf-subtab="stats">Statistiques globales</button>
+    </div>
+    ${ ui.performanceSubTab==='stats' ? viewPerfStats() : viewPerfFiche() }
+  `;
+}
+
+function viewPerfFiche(){
+  if(state.students.length===0){
+    return `<div class="empty">Ajoutez d'abord des élèves dans l'onglet « Élèves ».</div>`;
+  }
+  const studentId = ui.perfStudent && studentById(ui.perfStudent) ? ui.perfStudent : state.students[0].id;
+  ui.perfStudent = studentId;
+  const student = studentById(studentId);
+  const niveau = student.niveau || 'debutant';
+  const grid = gridFor(niveau);
+  const evals = state.performance.filter(p=>p.studentId===studentId && p.sections).sort((a,b)=>b.date.localeCompare(a.date));
+  const latest = evals[0] || null;
+  const prev = evals[1] || null;
+  const objectifs = state.objectifs.filter(o=>o.studentId===studentId).sort((a,b)=>(b.dateCreation||'').localeCompare(a.dateCreation||''));
+
+  return `
+    <div class="card">
+      <div class="form-grid" style="margin-bottom:0;">
+        <div class="field">
+          <label>Élève</label>
+          <select id="select-perf-student">
+            ${state.students.map(s=>`<option value="${s.id}" ${s.id===studentId?'selected':''}>${esc(s.prenom)} ${esc(s.nom)} — ${esc(groupById(s.groupId)?.nom||'')}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>Niveau d'évaluation</label>
+          <select id="select-perf-niveau" data-student-id="${student.id}">
+            ${NIVEAUX.map(n=>`<option value="${n.key}" ${niveau===n.key?'selected':''}>${n.label}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <p class="helper" style="margin-top:10px;">Le niveau détermine la grille de critères utilisée pour la prochaine évaluation. Les bilans déjà enregistrés conservent la grille avec laquelle ils ont été notés.</p>
+    </div>
+
+    <div class="card">
+      <h3 class="perf-h">Fiche individuelle — ${esc(student.prenom)} ${esc(student.nom)}</h3>
+      <p class="helper" style="margin-bottom:14px;">${esc(groupById(student.groupId)?.nom || 'Sans groupe')} · Niveau : ${esc(niveauLabel(niveau))} ${student.dateNaissance?`· né(e) le ${fmtDate(student.dateNaissance)}`:''} ${latest?`· dernier bilan le ${fmtDate(latest.date)} (${esc(niveauLabel(latest.niveau))})`:''}</p>
+      ${ !latest ? `<div class="empty">Aucune évaluation enregistrée pour l'instant.</div>` :
+        `<div class="cat-grid">
+          ${gridFor(latest.niveau).map(section=>{
+            const val = sectionAverage(latest.sections, section.key, latest.niveau);
+            const pval = (prev && prev.niveau===latest.niveau) ? sectionAverage(prev.sections, section.key, prev.niveau) : null;
+            let delta = '';
+            if(val!==null && pval!==null){
+              const diff = val-pval;
+              delta = diff>0.05?`<span class="delta up">▲ ${diff.toFixed(1)}</span>`:diff<-0.05?`<span class="delta down">▼ ${Math.abs(diff).toFixed(1)}</span>`:`<span class="delta flat">=</span>`;
+            }
+            return `<div class="cat-row">
+              <div class="cat-label">${section.label}</div>
+              <div class="cat-bar-wrap"><div class="cat-bar" style="width:${val!==null?Math.round((val/4)*100):0}%"></div></div>
+              <div class="cat-val">${val!==null?val.toFixed(1)+'/4':'—'} ${delta}</div>
+            </div>`;
+          }).join('')}
+        </div>`
+      }
+    </div>
+
+    <div class="card">
+      <h3 class="perf-h">Nouvelle évaluation — grille « ${esc(niveauLabel(niveau))} »</h3>
+      <form id="form-add-eval" data-eval-niveau="${niveau}">
+        <div class="form-grid">
+          <div class="field"><label>Date</label><input type="date" name="date" value="${todayISO()}" required></div>
+          <div class="field"><label>Coach / Évaluateur</label>
+            ${ state.coaches.length>0 ? `
+              <select name="coachId">
+                <option value="">— Choisir —</option>
+                ${state.coaches.map(c=>`<option value="${c.id}">${esc(c.prenom)} ${esc(c.nom)}</option>`).join('')}
+              </select>` :
+              `<input type="text" name="coach" placeholder="Nom du coach">`
+            }
+          </div>
+        </div>
+
+        ${grid.map(section=>`
+          <div class="eval-section">
+            <h4 class="eval-section-title">${section.label}</h4>
+            <p class="helper" style="margin:2px 0 10px;">${esc(section.objectif)}</p>
+            ${section.criteria.map(c=>`
+              <div class="eval-criterion">
+                <div class="eval-criterion-label">${c.label}<span class="helper" style="display:block;font-weight:400;">${esc(c.desc)}</span></div>
+                <select name="s_${section.key}__${c.key}">
+                  <option value="">— Non noté —</option>
+                  <option value="1">1 · Non acquis</option>
+                  <option value="2">2 · En cours</option>
+                  <option value="3">3 · Acquis</option>
+                  <option value="4">4 · Maîtrisé</option>
+                </select>
+              </div>
+            `).join('')}
+          </div>
+        `).join('')}
+
+        <div class="eval-section">
+          <h4 class="eval-section-title">Indicateurs de performance chiffrés (test terrain)</h4>
+          <div class="form-grid">
+            <div class="field"><label>Nombre de trous joués</label><input type="number" name="ind_trous" min="0" placeholder="Ex : 9"></div>
+            <div class="field"><label>Score réel (coups)</label><input type="number" name="ind_score" min="0" placeholder="Ex : 45"></div>
+            <div class="field"><label>Fairways touchés</label><input type="number" name="ind_fairways_touches" min="0" placeholder="Ex : 5"></div>
+            <div class="field"><label>Fairways total</label><input type="number" name="ind_fairways_total" min="0" placeholder="Ex : 9"></div>
+            <div class="field"><label>Nombre de putts total</label><input type="number" name="ind_putts" min="0" placeholder="Ex : 20"></div>
+          </div>
+          <p class="helper">Repères : plus de 50 % de fairways touchés · moins de 2 putts par green en moyenne.</p>
+        </div>
+
+        <div class="field" style="margin-bottom:12px;"><label>Points forts</label><textarea name="pointsForts" rows="2" placeholder="Ce qui fonctionne bien..."></textarea></div>
+        <div class="field" style="margin-bottom:12px;"><label>Axes prioritaires d'amélioration</label><textarea name="axesAmelioration" rows="2" placeholder="Ce sur quoi travailler en priorité..."></textarea></div>
+
+        <button class="btn" type="submit">Enregistrer l'évaluation</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3 class="perf-h">Objectifs individuels</h3>
+      <form id="form-add-objective" style="margin-bottom:14px;">
+        <div class="form-grid">
+          <div class="field"><label>Objectif</label><input type="text" name="titre" placeholder="Ex : Passer sous les 100 coups" required></div>
+          <div class="field"><label>Échéance</label><input type="date" name="dateCible"></div>
+        </div>
+        <div class="field" style="margin-bottom:10px;"><label>Détail</label><textarea name="description" rows="2" placeholder="Précisions sur l'objectif"></textarea></div>
+        <button class="btn secondary" type="submit">Ajouter l'objectif</button>
+      </form>
+      ${ objectifs.length===0 ? `<div class="empty">Aucun objectif défini pour cet élève.</div>` :
+        objectifs.map(o=>`
+          <div class="row-between" style="border-bottom:1px solid var(--line);padding:10px 0;">
+            <div>
+              <div><strong>${esc(o.titre)}</strong> ${o.dateCible?`<span class="helper">— échéance ${fmtDate(o.dateCible)}</span>`:''}</div>
+              ${o.description?`<div class="helper">${esc(o.description)}</div>`:''}
+            </div>
+            <div class="inline-actions">
+              <select data-objective-status="${o.id}">
+                <option value="en_cours" ${o.statut==='en_cours'?'selected':''}>En cours</option>
+                <option value="atteint" ${o.statut==='atteint'?'selected':''}>Atteint</option>
+                <option value="abandonne" ${o.statut==='abandonne'?'selected':''}>Abandonné</option>
+              </select>
+              <button class="btn danger small" data-delete-objective="${o.id}">Suppr.</button>
+            </div>
+          </div>
+        `).join('')
+      }
+    </div>
+
+    <div class="card">
+      <h3 class="perf-h">Historique de progression</h3>
+      ${ evals.length===0 ? `<div class="empty">Pas encore d'historique pour cet élève.</div>` :
+        evals.map(e=>{
+          const eGrid = gridFor(e.niveau);
+          const ind = e.indicateurs || {};
+          const indParts = [];
+          if(ind.scoreReel) indParts.push(`Score ${esc(ind.scoreReel)} coups${ind.scoreTrous?` sur ${esc(ind.scoreTrous)} trous`:''}`);
+          if(ind.fairwaysTouches!==''&&ind.fairwaysTouches!==undefined) indParts.push(`Fairways ${esc(ind.fairwaysTouches)}/${esc(ind.fairwaysTotal)}`);
+          if(ind.puttsTotal) indParts.push(`${esc(ind.puttsTotal)} putts`);
+          return `
+          <div class="eval-history-card">
+            <div class="row-between">
+              <div><strong>${fmtDate(e.date)}</strong>${e.coach?` — ${esc(e.coach)}`:''} <span class="pill ok">${esc(niveauLabel(e.niveau))}</span></div>
+              <button class="btn danger small" data-delete-eval="${e.id}">Suppr.</button>
+            </div>
+            <div class="cat-grid" style="margin-top:8px;">
+              ${eGrid.map(section=>{
+                const val = sectionAverage(e.sections, section.key, e.niveau);
+                return `<div class="cat-row">
+                  <div class="cat-label">${section.label}</div>
+                  <div class="cat-bar-wrap"><div class="cat-bar" style="width:${val!==null?Math.round((val/4)*100):0}%"></div></div>
+                  <div class="cat-val">${val!==null?val.toFixed(1)+'/4':'—'}</div>
+                </div>`;
+              }).join('')}
+            </div>
+            ${ indParts.length ? `<div class="helper" style="margin-top:8px;">${indParts.join(' · ')}</div>` : '' }
+            ${ e.pointsForts ? `<div class="helper" style="margin-top:6px;"><strong>Points forts :</strong> ${esc(e.pointsForts)}</div>` : '' }
+            ${ e.axesAmelioration ? `<div class="helper" style="margin-top:4px;"><strong>Axes d'amélioration :</strong> ${esc(e.axesAmelioration)}</div>` : '' }
+          </div>`;
+        }).join('')
+      }
+    </div>
+  `;
+}
+
+function viewPerfStats(){
+  const studentsWithEval = state.students.map(s=>{
+    const latest = state.performance.filter(p=>p.studentId===s.id && p.sections).sort((a,b)=>b.date.localeCompare(a.date))[0];
+    return {student:s, latest};
+  }).filter(x=>x.latest);
+  const totalStudents = state.students.length;
+  const evaluated = studentsWithEval.length;
+
+  const totalObj = state.objectifs.length;
+  const atteints = state.objectifs.filter(o=>o.statut==='atteint').length;
+
+  // moyenne générale tous niveaux confondus (moyenne de moyennes, comparable car toujours sur /4)
+  const allGlobalAvgs = studentsWithEval.map(x=>globalAverage(x.latest.sections, x.latest.niveau)).filter(v=>v!==null);
+  const overallAvg = allGlobalAvgs.length ? (allGlobalAvgs.reduce((a,b)=>a+b,0)/allGlobalAvgs.length) : null;
+
+  const rankedStudents = studentsWithEval.slice().sort((a,b)=>(globalAverage(a.latest.sections,a.latest.niveau)||0)-(globalAverage(b.latest.sections,b.latest.niveau)||0));
+
+  // regroupement par niveau, car les grilles de critères diffèrent d'un niveau à l'autre
+  const groups = NIVEAUX.map(n=>{
+    const members = studentsWithEval.filter(x=>(x.latest.niveau||'debutant')===n.key);
+    if(members.length===0) return null;
+    const grid = gridFor(n.key);
+    const sectionAverages = {};
+    grid.forEach(section=>{
+      const vals = members.map(x=>sectionAverage(x.latest.sections, section.key, n.key)).filter(v=>v!==null);
+      sectionAverages[section.key] = vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length) : null;
+    });
+    const withAvg = grid.filter(s=>sectionAverages[s.key]!==null);
+    const weakest = withAvg.length ? withAvg.slice().sort((a,b)=>sectionAverages[a.key]-sectionAverages[b.key])[0] : null;
+    return { niveau:n, members, grid, sectionAverages, weakest };
+  }).filter(Boolean);
+
+  return `
+    <div class="stat-row">
+      <div class="stat"><div class="num">${evaluated}/${totalStudents}</div><div class="label">Élèves évalués</div></div>
+      <div class="stat"><div class="num">${overallAvg!==null?overallAvg.toFixed(1):'—'}</div><div class="label">Moyenne générale /4</div></div>
+      <div class="stat"><div class="num">${atteints}/${totalObj}</div><div class="label">Objectifs atteints</div></div>
+      <div class="stat"><div class="num">${groups.length}/${NIVEAUX.length}</div><div class="label">Niveaux représentés</div></div>
+    </div>
+
+    ${ groups.length===0 ? `<div class="card"><div class="empty">Aucune évaluation enregistrée pour l'instant.</div></div>` :
+      groups.map(g=>`
+        <div class="card">
+          <div class="row-between" style="margin-bottom:4px;">
+            <h3 class="perf-h" style="margin-bottom:0;">Niveau ${esc(g.niveau.label)}</h3>
+            <span class="helper">${g.members.length} élève(s) évalué(s)</span>
+          </div>
+          ${ g.weakest ? `<p class="helper" style="margin-bottom:12px;">Point collectif à travailler : <strong>${esc(g.weakest.label)}</strong></p>` : '' }
+          <div class="cat-grid">
+            ${g.grid.map(section=>`
+              <div class="cat-row">
+                <div class="cat-label">${section.label}</div>
+                <div class="cat-bar-wrap"><div class="cat-bar" style="width:${g.sectionAverages[section.key]?Math.round((g.sectionAverages[section.key]/4)*100):0}%"></div></div>
+                <div class="cat-val">${g.sectionAverages[section.key]!==null?g.sectionAverages[section.key].toFixed(1)+'/4':'—'}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('')
+    }
+
+    <div class="card">
+      <h3 class="perf-h">Détail par élève</h3>
+      ${ studentsWithEval.length===0 ? `<div class="empty">Aucune évaluation enregistrée pour l'instant.</div>` :
+        `<table><thead><tr><th>Élève</th><th>Groupe</th><th>Niveau</th><th>Moyenne dernier bilan</th><th>Date</th></tr></thead><tbody>
+          ${rankedStudents.map(x=>`
+            <tr>
+              <td>${esc(x.student.prenom)} ${esc(x.student.nom)}</td>
+              <td>${esc(groupById(x.student.groupId)?.nom||'—')}</td>
+              <td><span class="pill ok">${esc(niveauLabel(x.latest.niveau))}</span></td>
+              <td>${globalAverage(x.latest.sections, x.latest.niveau).toFixed(1)}/4</td>
+              <td>${fmtDate(x.latest.date)}</td>
+            </tr>
+          `).join('')}
+        </tbody></table>`
+      }
+    </div>
+  `;
+}
+
+/* ---------------------------------------------------------
+   VUE : BULLETINS
+--------------------------------------------------------- */
+function viewBulletins(){
+  const studentId = ui.bulletinStudent && studentById(ui.bulletinStudent) ? ui.bulletinStudent : (state.students[0]?.id || null);
+  ui.bulletinStudent = studentId;
+  const student = studentId ? studentById(studentId) : null;
+
+  return `
+    <h2 class="section-title">Bulletin mensuel</h2>
+    <p class="section-sub">Génère un bulletin détaillé (assiduité séance par séance, évaluations du coach par catégorie, objectifs) à envoyer aux parents.</p>
+    <div class="card">
+      <div class="form-grid">
+        <div class="field"><label>Élève</label>
+          <select id="select-bulletin-student">
+            ${state.students.length===0 ? `<option>Aucun élève</option>` :
+              state.students.map(s=>`<option value="${s.id}" ${s.id===studentId?'selected':''}>${esc(s.prenom)} ${esc(s.nom)}</option>`).join('')
+            }
+          </select>
+        </div>
+        <div class="field"><label>Mois</label>
+          <input type="month" id="input-bulletin-month" value="${ui.bulletinMonth}">
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:14px;">
+        <label>Appréciation et commentaire (optionnel)</label>
+        <textarea id="input-bulletin-appreciation" rows="3" placeholder="Appréciation générale du coach sur le mois écoulé, encouragements, axes de travail..."></textarea>
+      </div>
+      <button class="btn" id="btn-generate-bulletin" ${!student?'disabled':''}>Générer le bulletin</button>
+    </div>
+    <div class="card" id="bulletin-output-wrap" style="display:none;">
+      <h3 style="margin-top:0;font-family:'Fraunces',serif;color:var(--green-900);">Aperçu</h3>
+      <textarea class="bulletin" id="bulletin-text" readonly></textarea>
+      <div class="inline-actions" style="margin-top:12px;">
+        <button class="btn secondary" id="btn-copy-bulletin">Copier le texte</button>
+        <a class="btn" id="btn-mailto-bulletin" href="#" style="text-decoration:none;text-align:center;">Ouvrir dans l'e-mail</a>
+      </div>
+      <p class="helper" id="bulletin-email-warning"></p>
+    </div>
+  `;
+}
+
+function generateBulletinText(student, monthStr, appreciation){
+  const group = groupById(student.groupId);
+  const [year, month] = monthStr.split('-').map(Number);
+  const sessions = sessionsOfGroup(student.groupId).filter(s=>{
+    const [y,m] = s.date.split('-').map(Number);
+    return y===year && m===month;
+  }).sort((a,b)=>a.date.localeCompare(b.date));
+  const total = sessions.length;
+  let present = 0, absent = 0, justifiee = 0;
+  sessions.forEach(s=>{
+    const v = normalizePresence(s.presences ? s.presences[student.id] : undefined);
+    if(v==='present') present++;
+    else if(v==='absent') absent++;
+    else if(v==='justifiee') justifiee++;
+  });
+  const consideredTotal = present + absent; // absences justifiées exclues du taux
+  const pct = consideredTotal>0 ? Math.round((present/consideredTotal)*100) : null;
+
+  const perfEntries = state.performance.filter(p=>{
+    if(!p.sections) return false;
+    const [y,m] = p.date.split('-').map(Number);
+    return p.studentId===student.id && y===year && m===month;
+  }).sort((a,b)=>a.date.localeCompare(b.date));
+
+  const objectifs = state.objectifs.filter(o=>o.studentId===student.id)
+    .sort((a,b)=>(b.dateCreation||'').localeCompare(a.dateCreation||''));
+  const statutLabel = {en_cours:'En cours', atteint:'Atteint', abandonne:'Abandonné'};
+
+  const monthFirstDay = `${year}-${String(month).padStart(2,'0')}-01`;
+  const monthLastDayNum = new Date(year, month, 0).getDate();
+  const monthLastDay = `${year}-${String(month).padStart(2,'0')}-${String(monthLastDayNum).padStart(2,'0')}`;
+  const stagesDuMois = state.stages.filter(st=>
+    (st.participantIds||[]).includes(student.id) &&
+    st.dateDebut <= monthLastDay && st.dateFin >= monthFirstDay
+  ).sort((a,b)=>a.dateDebut.localeCompare(b.dateDebut));
+
+  const monthLabel = new Date(year, month-1, 1).toLocaleDateString('fr-FR',{month:'long', year:'numeric'});
+
+  let txt = '';
+  txt += `Bulletin mensuel — ASL Golf du Cognac\n`;
+  txt += `${student.prenom} ${student.nom} — Groupe : ${group ? group.nom : '—'}\n`;
+  txt += `Période : ${monthLabel}\n`;
+
+  txt += `\n=== Assiduité ===\n`;
+  if(total===0){
+    txt += `Aucune séance enregistrée ce mois-ci pour ce groupe.\n`;
+  }else{
+    txt += `Séances prévues : ${total}\n`;
+    txt += `Présences : ${present}/${consideredTotal}${pct!==null?` (${pct}%)`:''}\n`;
+    if(justifiee>0) txt += `Absences justifiées : ${justifiee}\n`;
+    txt += `\nDétail des séances :\n`;
+    sessions.forEach(s=>{
+      const v = normalizePresence(s.presences ? s.presences[student.id] : undefined);
+      const label = v==='present'?'Présent':v==='absent'?'Absent':v==='justifiee'?'Absence justifiée':'Non renseigné';
+      const coach = s.coachId ? coachById(s.coachId) : null;
+      txt += `- ${fmtDate(s.date)} : ${label}${coach?` (coach : ${coach.prenom} ${coach.nom})`:''}\n`;
+    });
+  }
+
+  txt += `\n=== Suivi technique du coach ===\n`;
+  if(perfEntries.length===0){
+    txt += `Aucune évaluation enregistrée ce mois-ci.\n`;
+  }else{
+    perfEntries.forEach(p=>{
+      txt += `\n${fmtDate(p.date)}${p.coach?` — ${p.coach}`:''} (grille ${niveauLabel(p.niveau)})\n`;
+      gridFor(p.niveau).forEach(section=>{
+        const avg = sectionAverage(p.sections, section.key, p.niveau);
+        if(avg!==null){
+          txt += `  ${section.label} : ${avg.toFixed(1)}/4\n`;
+          section.criteria.forEach(c=>{
+            const v = p.sections[section.key] ? p.sections[section.key][c.key] : undefined;
+            if(v!==undefined && v!==null && v!=='') txt += `    - ${c.label} : ${v}/4 (${SCORE_LABELS[v]||''})\n`;
+          });
+        }
+      });
+      if(p.indicateurs){
+        const ind = p.indicateurs;
+        const parts = [];
+        if(ind.scoreReel) parts.push(`Score ${ind.scoreReel} coups${ind.scoreTrous?` sur ${ind.scoreTrous} trous`:''}`);
+        if(ind.fairwaysTouches!=='' && ind.fairwaysTouches!==undefined) parts.push(`Fairways touchés ${ind.fairwaysTouches}/${ind.fairwaysTotal}`);
+        if(ind.puttsTotal) parts.push(`${ind.puttsTotal} putts au total`);
+        if(parts.length) txt += `  Indicateurs terrain : ${parts.join(' · ')}\n`;
+      }
+      if(p.pointsForts) txt += `  Points forts : ${p.pointsForts}\n`;
+      if(p.axesAmelioration) txt += `  Axes d'amélioration : ${p.axesAmelioration}\n`;
+    });
+  }
+
+  txt += `\n=== Participation aux stages ===\n`;
+  if(stagesDuMois.length===0){
+    txt += `Aucun stage sur cette période.\n`;
+  }else{
+    stagesDuMois.forEach(st=>{
+      const coach = st.coachId ? coachById(st.coachId) : null;
+      txt += `\n${st.nom} (${fmtDate(st.dateDebut)} → ${fmtDate(st.dateFin)})${coach?` — coach : ${coach.prenom} ${coach.nom}`:''}\n`;
+      if(st.objectifs) txt += `  Objectifs du stage : ${st.objectifs}\n`;
+      const commentaire = (st.commentaires && st.commentaires[student.id]) || '';
+      if(commentaire) txt += `  Commentaire : ${commentaire}\n`;
+    });
+  }
+
+  txt += `\n=== Objectifs individuels ===\n`;
+  if(objectifs.length===0){
+    txt += `Aucun objectif défini.\n`;
+  }else{
+    objectifs.forEach(o=>{
+      txt += `- ${o.titre} [${statutLabel[o.statut]||o.statut}]${o.dateCible?` — échéance ${fmtDate(o.dateCible)}`:''}\n`;
+      if(o.description) txt += `  ${o.description}\n`;
+    });
+  }
+
+  if(appreciation && appreciation.trim()){
+    txt += `\n=== Appréciation et commentaire ===\n`;
+    txt += `${appreciation.trim()}\n`;
+  }
+
+  txt += `\nSportivement,\nL'équipe de l'ASL Golf du Cognac`;
+  return txt;
+}
+
+/* ---------------------------------------------------------
+   VUE : COMPÉTITIONS
+--------------------------------------------------------- */
+function viewCompetitions(){
+  const comps = state.competitions.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  return `
+    <h2 class="section-title">Compétitions</h2>
+    <p class="section-sub">Organisez vos compétitions et gérez les inscriptions des élèves.</p>
+
+    <div class="card">
+      <h3 class="perf-h">Nouvelle compétition</h3>
+      <form id="form-add-competition">
+        <div class="form-grid">
+          <div class="field"><label>Nom de la compétition</label><input type="text" name="nom" placeholder="Ex : Trophée jeunes du Cognac" required></div>
+          <div class="field"><label>Date</label><input type="date" name="date" required></div>
+          <div class="field"><label>Lieu</label><input type="text" name="lieu" placeholder="Ex : Golf du Cognac"></div>
+          <div class="field"><label>Date limite d'inscription</label><input type="date" name="dateLimiteInscription"></div>
+          <div class="field"><label>Places maximum (optionnel)</label><input type="number" name="placesMax" min="0" placeholder="Illimité si vide"></div>
+        </div>
+        <div class="field" style="margin-bottom:10px;">
+          <label>Niveaux concernés (laisser vide = tous niveaux)</label>
+          <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:6px;">
+            ${NIVEAUX.map(n=>`
+              <label style="display:flex;align-items:center;gap:6px;font-weight:400;font-size:.85rem;">
+                <input type="checkbox" name="niveaux" value="${n.key}"> ${n.label}
+              </label>
+            `).join('')}
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:12px;"><label>Description / objectifs</label><textarea name="description" rows="2" placeholder="Format, enjeux, informations pratiques..."></textarea></div>
+        <button class="btn" type="submit">Créer la compétition</button>
+      </form>
+    </div>
+
+    ${ comps.length===0 ? `<div class="card"><div class="empty">Aucune compétition créée pour l'instant.</div></div>` :
+      comps.map(c=>viewCompetitionCard(c)).join('')
+    }
+  `;
+}
+
+function viewCompetitionCard(c){
+  const opened = ui.openCompetitionId === c.id;
+  const participants = (c.participantIds||[]).map(id=>studentById(id)).filter(Boolean);
+  const eligibleStudents = (c.niveaux && c.niveaux.length>0)
+    ? state.students.filter(s=>c.niveaux.includes(s.niveau||'debutant'))
+    : state.students;
+  const placesLabel = c.placesMax ? `${participants.length}/${c.placesMax} place(s)` : `${participants.length} inscrit(s)`;
+  const closed = c.dateLimiteInscription && todayISO() > c.dateLimiteInscription;
+  return `
+    <div class="card">
+      <div class="row-between">
+        <div>
+          <div class="name" style="font-weight:700;color:var(--green-900);">${esc(c.nom)}</div>
+          <div class="meta helper">${fmtDate(c.date)}${c.lieu?` · ${esc(c.lieu)}`:''} · ${placesLabel}${closed?` · <span class="pill bad">Inscriptions closes</span>`:''}</div>
+        </div>
+        <div class="inline-actions">
+          <button class="btn secondary small" data-toggle-competition="${c.id}">${opened?'Fermer':'Gérer'}</button>
+          <button class="btn danger small" data-delete-competition="${c.id}">Supprimer</button>
+        </div>
+      </div>
+      ${ c.description ? `<p class="helper" style="margin-top:8px;">${esc(c.description)}</p>` : '' }
+      ${ c.niveaux && c.niveaux.length>0 ? `<p class="helper" style="margin-top:4px;">Niveaux concernés : ${c.niveaux.map(n=>esc(niveauLabel(n))).join(', ')}</p>` : '' }
+      ${ opened ? `
+        <div style="margin-top:14px;border-top:1px solid var(--line);padding-top:14px;">
+          <h4 class="eval-section-title" style="margin-bottom:8px;">Inscriptions</h4>
+          ${ eligibleStudents.length===0 ? `<div class="empty">Aucun élève éligible pour cette compétition.</div>` : `
+          <div style="max-height:220px;overflow-y:auto;border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:16px;">
+            ${eligibleStudents.slice().sort((a,b)=>(a.nom+a.prenom).localeCompare(b.nom+b.prenom)).map(s=>`
+              <label style="display:flex;align-items:center;gap:8px;font-weight:400;margin-bottom:6px;font-size:.88rem;">
+                <input type="checkbox" data-competition-participant="${c.id}|${s.id}" ${(c.participantIds||[]).includes(s.id)?'checked':''}>
+                <span>${esc(s.prenom)} ${esc(s.nom)} <span class="helper">(${esc(groupById(s.groupId)?.nom||'sans groupe')} · ${esc(niveauLabel(s.niveau||'debutant'))})</span></span>
+              </label>
+            `).join('')}
+          </div>`}
+
+          ${ participants.length===0 ? `<div class="empty">Aucun participant inscrit pour l'instant.</div>` :
+            `<h4 class="eval-section-title" style="margin-bottom:8px;">Résultats</h4>` +
+            participants.map(p=>{
+              const res = (c.resultats && c.resultats[p.id]) || {};
+              return `
+                <div class="eval-history-card">
+                  <div class="row-between"><strong>${esc(p.prenom)} ${esc(p.nom)}</strong></div>
+                  <div class="form-grid" style="margin-top:8px;">
+                    <div class="field"><label>Classement</label><input type="text" data-competition-result="${c.id}|${p.id}|classement" value="${esc(res.classement)||''}" placeholder="Ex : 3e"></div>
+                    <div class="field"><label>Score</label><input type="text" data-competition-result="${c.id}|${p.id}|score" value="${esc(res.score)||''}" placeholder="Ex : 42 pts"></div>
+                  </div>
+                  <div class="field" style="margin-top:6px;margin-bottom:0;">
+                    <label>Commentaire</label>
+                    <textarea rows="2" data-competition-result="${c.id}|${p.id}|commentaire" placeholder="Ressenti, points à retenir...">${esc(res.commentaire)||''}</textarea>
+                  </div>
+                </div>
+              `;
+            }).join('')
+          }
+        </div>
+      ` : '' }
+    </div>
+  `;
+}
+
+/* ---------------------------------------------------------
+   VUE : SUGGESTIONS & ROADMAP
+--------------------------------------------------------- */
+function viewSuggestions(){
+  let list = state.suggestions.slice();
+  if(ui.suggestionsFilterStatut !== 'all') list = list.filter(s=>s.statut===ui.suggestionsFilterStatut);
+  const prioRank = {haute:0, normale:1, basse:2};
+  list.sort((a,b)=> (prioRank[a.priorite]-prioRank[b.priorite]) || (b.dateCreation||'').localeCompare(a.dateCreation||''));
+
+  const nbALetude = state.suggestions.filter(s=>s.statut==='a_letude').length;
+  const nbEnCours = state.suggestions.filter(s=>s.statut==='en_cours').length;
+  const nbFait = state.suggestions.filter(s=>s.statut==='fait').length;
+
+  return `
+    <h2 class="section-title">Suggestions & Roadmap</h2>
+    <p class="section-sub">Les demandes d'évolution et idées à suivre pour l'application.</p>
+
+    <div class="stat-row">
+      <div class="stat"><div class="num">${state.suggestions.length}</div><div class="label">Suggestions au total</div></div>
+      <div class="stat"><div class="num">${nbALetude}</div><div class="label">À l'étude</div></div>
+      <div class="stat"><div class="num">${nbEnCours}</div><div class="label">En cours</div></div>
+      <div class="stat"><div class="num">${nbFait}</div><div class="label">Réalisées</div></div>
+    </div>
+
+    <div class="card">
+      <h3 class="perf-h">Nouvelle suggestion</h3>
+      <form id="form-add-suggestion">
+        <div class="form-grid">
+          <div class="field"><label>Titre</label><input type="text" name="titre" placeholder="Ex : Export CSV des présences" required></div>
+          <div class="field"><label>Demandé par</label><input type="text" name="demandeur" placeholder="Nom (optionnel)"></div>
+          <div class="field"><label>Priorité</label>
+            <select name="priorite">
+              ${PRIORITES_SUGGESTION.map(p=>`<option value="${p.key}" ${p.key==='normale'?'selected':''}>${p.label}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:12px;"><label>Description</label><textarea name="description" rows="3" placeholder="Détaillez le besoin ou l'idée..."></textarea></div>
+        <button class="btn" type="submit">Ajouter la suggestion</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="field" style="max-width:280px;margin-bottom:14px;">
+        <label>Filtrer par statut</label>
+        <select id="select-suggestions-filter">
+          <option value="all" ${ui.suggestionsFilterStatut==='all'?'selected':''}>Tous les statuts</option>
+          ${STATUTS_SUGGESTION.map(s=>`<option value="${s.key}" ${ui.suggestionsFilterStatut===s.key?'selected':''}>${s.label}</option>`).join('')}
+        </select>
+      </div>
+
+      ${ list.length===0 ? `<div class="empty">Aucune suggestion ${ui.suggestionsFilterStatut!=='all'?'pour ce statut':"pour l'instant"}.</div>` :
+        list.map(s=>{
+          const prioLabel = (PRIORITES_SUGGESTION.find(p=>p.key===s.priorite)||{}).label || s.priorite;
+          const prioClass = s.priorite==='haute' ? 'bad' : s.priorite==='basse' ? 'ok' : 'warn';
+          return `
+          <div class="eval-history-card">
+            <div class="row-between">
+              <div>
+                <span class="pill ${prioClass}">${esc(prioLabel)}</span>
+                <strong style="margin-left:8px;">${esc(s.titre)}</strong>
+              </div>
+              <button class="btn danger small" data-delete-suggestion="${s.id}">Suppr.</button>
+            </div>
+            ${s.description?`<div class="helper" style="margin-top:8px;">${esc(s.description)}</div>`:''}
+            <div class="row-between" style="margin-top:10px;">
+              <span class="helper">${s.demandeur?`Demandé par ${esc(s.demandeur)} · `:''}${s.dateCreation?fmtDate(s.dateCreation):''}</span>
+              <select data-suggestion-status="${s.id}">
+                ${STATUTS_SUGGESTION.map(st=>`<option value="${st.key}" ${s.statut===st.key?'selected':''}>${st.label}</option>`).join('')}
+              </select>
+            </div>
+          </div>`;
+        }).join('')
+      }
+    </div>
+  `;
+}
+
+/* ---------------------------------------------------------
+   VUE : PARAMÉTRAGE
+--------------------------------------------------------- */
+function viewParametres(){
+  const colors = (state.settings && state.settings.colors) || DEFAULT_COLORS;
+  const logo = state.settings && state.settings.logoDataUrl;
+  const saisonsSorted = state.saisons.slice().sort((a,b)=>a.label.localeCompare(b.label));
+  return `
+    <h2 class="section-title">Paramétrage</h2>
+    <p class="section-sub">Personnalisez l'identité visuelle de votre club, gérez vos saisons, logo et couleurs du site.</p>
+
+    <div class="card">
+      <h3 class="perf-h">Gestion des saisons</h3>
+      <p class="helper" style="margin-bottom:14px;">La saison active détermine le contexte par défaut de l'application. Vous pouvez toujours consulter une autre saison depuis l'onglet Groupes.</p>
+      ${ saisonsSorted.length===0 ? `<div class="empty">Aucune saison créée.</div>` :
+        saisonsSorted.map(s=>`
+          <div class="row-between" style="border-bottom:1px solid var(--line);padding:10px 0;">
+            <div>
+              <strong>${esc(s.label)}</strong> ${s.id===state.saisonActiveId?`<span class="pill ok" style="margin-left:8px;">Active</span>`:''}
+            </div>
+            <div class="inline-actions">
+              ${s.id!==state.saisonActiveId?`<button class="btn secondary small" data-set-active-saison="${s.id}">Définir comme active</button>`:''}
+              <button class="btn danger small" data-delete-saison="${s.id}">Supprimer</button>
+            </div>
+          </div>
+        `).join('')
+      }
+      <button class="btn secondary small" id="btn-add-next-saison" style="margin-top:14px;">+ Ajouter la saison suivante (${esc(computeNextSaisonLabel())})</button>
+    </div>
+
+    <div class="card">
+      <h3 class="perf-h">Logo du club</h3>
+      ${ logo ? `<img src="${logo}" alt="Logo du club" style="max-width:120px;max-height:120px;display:block;margin-bottom:12px;border-radius:10px;border:1px solid var(--line);">` :
+        `<p class="helper" style="margin-bottom:12px;">Aucun logo importé — le drapeau par défaut est utilisé.</p>` }
+      <div class="inline-actions">
+        <label class="btn secondary small" style="cursor:pointer;">
+          Choisir un logo
+          <input type="file" id="input-logo-upload" accept="image/*" style="display:none;">
+        </label>
+        ${ logo ? `<button class="btn danger small" id="btn-remove-logo">Retirer le logo</button>` : '' }
+      </div>
+      <p class="helper" style="margin-top:10px;">Formats image classiques (PNG, JPG, SVG). Préférez un fichier léger (moins de 300 Ko) pour un chargement rapide.</p>
+    </div>
+
+    <div class="card">
+      <h3 class="perf-h">Couleurs du site</h3>
+      <div class="color-grid">
+        <div class="field">
+          <label>Couleur principale (en-tête)</label>
+          <input type="color" data-color-key="header" value="${colors.header}">
+        </div>
+        <div class="field">
+          <label>Couleur des boutons</label>
+          <input type="color" data-color-key="boutons" value="${colors.boutons}">
+        </div>
+        <div class="field">
+          <label>Couleur d'accent (bordures, pastilles)</label>
+          <input type="color" data-color-key="accent" value="${colors.accent}">
+        </div>
+        <div class="field">
+          <label>Couleur de fond</label>
+          <input type="color" data-color-key="fond" value="${colors.fond}">
+        </div>
+      </div>
+      <button class="btn secondary small" id="btn-reset-colors" style="margin-top:14px;">Réinitialiser les couleurs par défaut</button>
+    </div>
+  `;
+}
+
+/* ---------------------------------------------------------
+   ÉVÉNEMENTS
+--------------------------------------------------------- */
+function bindEvents(){
+  const app = document.getElementById('app');
+
+  app.querySelectorAll('[data-goto]').forEach(b=>{
+    b.addEventListener('click', ()=>{ ui.tab = b.dataset.goto; render(); });
+  });
+
+  // --- DASHBOARD : période ---
+  const inpDashStart = document.getElementById('input-dash-start');
+  if(inpDashStart) inpDashStart.addEventListener('change', ()=>{ ui.dashPeriodStart = inpDashStart.value || null; render(); });
+  const inpDashEnd = document.getElementById('input-dash-end');
+  if(inpDashEnd) inpDashEnd.addEventListener('change', ()=>{ ui.dashPeriodEnd = inpDashEnd.value || null; render(); });
+  const btnDashReset = document.getElementById('btn-dash-reset-period');
+  if(btnDashReset) btnDashReset.addEventListener('click', ()=>{ ui.dashPeriodStart = null; ui.dashPeriodEnd = null; render(); });
+
+  // --- COMPÉTITIONS ---
+  const formAddCompetition = document.getElementById('form-add-competition');
+  if(formAddCompetition){
+    formAddCompetition.addEventListener('submit', async e=>{
+      e.preventDefault();
+      const fd = new FormData(formAddCompetition);
+      const nom = fd.get('nom').trim();
+      const date = fd.get('date');
+      if(!nom || !date) return;
+      state.competitions.push({
+        id:uid(), nom, date,
+        lieu:(fd.get('lieu')||'').trim(),
+        dateLimiteInscription: fd.get('dateLimiteInscription') || null,
+        placesMax: fd.get('placesMax') ? Number(fd.get('placesMax')) : null,
+        niveaux: fd.getAll('niveaux'),
+        description:(fd.get('description')||'').trim(),
+        participantIds: [], resultats: {}
+      });
+      await saveState();
+      showToast('Compétition créée.');
+      render();
+    });
+  }
+  app.querySelectorAll('[data-toggle-competition]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const id = el.dataset.toggleCompetition;
+      ui.openCompetitionId = ui.openCompetitionId===id ? null : id;
+      render();
+    });
+  });
+  app.querySelectorAll('[data-delete-competition]').forEach(el=>{
+    el.addEventListener('click', async ()=>{
+      if(!confirm('Supprimer cette compétition ?')) return;
+      state.competitions = state.competitions.filter(c=>c.id!==el.dataset.deleteCompetition);
+      if(ui.openCompetitionId===el.dataset.deleteCompetition) ui.openCompetitionId = null;
+      await saveState();
+      showToast('Compétition supprimée.');
+      render();
+    });
+  });
+  app.querySelectorAll('[data-competition-participant]').forEach(el=>{
+    el.addEventListener('change', async ()=>{
+      const [compId, studentId] = el.dataset.competitionParticipant.split('|');
+      const c = state.competitions.find(x=>x.id===compId);
+      if(!c) return;
+      c.participantIds = c.participantIds || [];
+      if(el.checked){
+        if(!c.participantIds.includes(studentId)) c.participantIds.push(studentId);
+      }else{
+        c.participantIds = c.participantIds.filter(id=>id!==studentId);
+      }
+      await saveState();
+      render();
+    });
+  });
+  app.querySelectorAll('[data-competition-result]').forEach(el=>{
+    el.addEventListener('change', async ()=>{
+      const [compId, studentId, field] = el.dataset.competitionResult.split('|');
+      const c = state.competitions.find(x=>x.id===compId);
+      if(!c) return;
+      c.resultats = c.resultats || {};
+      c.resultats[studentId] = c.resultats[studentId] || {};
+      c.resultats[studentId][field] = el.value;
+      await saveState();
+      showToast('Résultat enregistré.');
+    });
+  });
+
+  // --- SUGGESTIONS & ROADMAP ---
+  const formAddSuggestion = document.getElementById('form-add-suggestion');
+  if(formAddSuggestion){
+    formAddSuggestion.addEventListener('submit', async e=>{
+      e.preventDefault();
+      const fd = new FormData(formAddSuggestion);
+      const titre = fd.get('titre').trim();
+      if(!titre) return;
+      state.suggestions.push({
+        id:uid(), titre,
+        demandeur:(fd.get('demandeur')||'').trim(),
+        priorite: fd.get('priorite') || 'normale',
+        description:(fd.get('description')||'').trim(),
+        statut:'a_letude',
+        dateCreation: todayISO()
+      });
+      await saveState();
+      showToast('Suggestion ajoutée.');
+      render();
+    });
+  }
+  const selSuggestionsFilter = document.getElementById('select-suggestions-filter');
+  if(selSuggestionsFilter) selSuggestionsFilter.addEventListener('change', ()=>{ ui.suggestionsFilterStatut = selSuggestionsFilter.value; render(); });
+  app.querySelectorAll('[data-suggestion-status]').forEach(el=>{
+    el.addEventListener('change', async ()=>{
+      const sug = state.suggestions.find(x=>x.id===el.dataset.suggestionStatus);
+      if(!sug) return;
+      sug.statut = el.value;
+      await saveState();
+      showToast('Statut mis à jour.');
+      render();
+    });
+  });
+  app.querySelectorAll('[data-delete-suggestion]').forEach(el=>{
+    el.addEventListener('click', async ()=>{
+      if(!confirm('Supprimer cette suggestion ?')) return;
+      state.suggestions = state.suggestions.filter(x=>x.id!==el.dataset.deleteSuggestion);
+      await saveState();
+      showToast('Suggestion supprimée.');
+      render();
+    });
+  });
+
+  // --- PARAMÉTRAGE ---
+  const btnAddNextSaison = document.getElementById('btn-add-next-saison');
+  if(btnAddNextSaison){
+    btnAddNextSaison.addEventListener('click', async ()=>{
+      const label = computeNextSaisonLabel();
+      if(state.saisons.some(s=>s.label===label)){ showToast('Cette saison existe déjà.'); return; }
+      state.saisons.push({id:uid(), label});
+      await saveState();
+      showToast(`Saison ${label} ajoutée.`);
+      render();
+    });
+  }
+  app.querySelectorAll('[data-set-active-saison]').forEach(el=>{
+    el.addEventListener('click', async ()=>{
+      state.saisonActiveId = el.dataset.setActiveSaison;
+      await saveState();
+      showToast('Saison active mise à jour.');
+      render();
+    });
+  });
+  app.querySelectorAll('[data-delete-saison]').forEach(el=>{
+    el.addEventListener('click', async ()=>{
+      const id = el.dataset.deleteSaison;
+      const nbGroupes = state.groups.filter(g=>g.saisonId===id).length;
+      const msg = nbGroupes>0
+        ? `Cette saison contient ${nbGroupes} groupe(s). Les supprimer aussi et supprimer la saison ?`
+        : 'Supprimer cette saison ?';
+      if(!confirm(msg)) return;
+      state.groups = state.groups.filter(g=>g.saisonId!==id);
+      state.stages = state.stages.filter(st=>st.saisonId!==id);
+      state.saisons = state.saisons.filter(s=>s.id!==id);
+      if(state.saisonActiveId===id) state.saisonActiveId = state.saisons[0]?.id || null;
+      if(ui.selGroupSaison===id) ui.selGroupSaison = null;
+      ensureDefaultSaison();
+      await saveState();
+      showToast('Saison supprimée.');
+      render();
+    });
+  });
+  const inputLogo = document.getElementById('input-logo-upload');
+  if(inputLogo){
+    inputLogo.addEventListener('change', ()=>{
+      const file = inputLogo.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = async ()=>{
+        state.settings = state.settings || {};
+        state.settings.logoDataUrl = reader.result;
+        await saveState();
+        applyTheme();
+        showToast('Logo mis à jour.');
+        render();
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+  const btnRemoveLogo = document.getElementById('btn-remove-logo');
+  if(btnRemoveLogo){
+    btnRemoveLogo.addEventListener('click', async ()=>{
+      state.settings = state.settings || {};
+      state.settings.logoDataUrl = null;
+      await saveState();
+      applyTheme();
+      showToast('Logo retiré.');
+      render();
+    });
+  }
+  app.querySelectorAll('[data-color-key]').forEach(el=>{
+    el.addEventListener('input', ()=>{
+      state.settings = state.settings || {};
+      state.settings.colors = state.settings.colors || { ...DEFAULT_COLORS };
+      state.settings.colors[el.dataset.colorKey] = el.value;
+      applyTheme();
+    });
+    el.addEventListener('change', async ()=>{
+      await saveState();
+      showToast('Couleur mise à jour.');
+    });
+  });
+  const btnResetColors = document.getElementById('btn-reset-colors');
+  if(btnResetColors){
+    btnResetColors.addEventListener('click', async ()=>{
+      state.settings = state.settings || {};
+      state.settings.colors = { ...DEFAULT_COLORS };
+      await saveState();
+      applyTheme();
+      showToast('Couleurs réinitialisées.');
+      render();
+    });
+  }
+
+  // --- COACHS ---
+  const formAddCoach = document.getElementById('form-add-coach');
+  if(formAddCoach){
+    formAddCoach.addEventListener('submit', async e=>{
+      e.preventDefault();
+      const fd = new FormData(formAddCoach);
+      const c = {id:uid(), prenom:fd.get('prenom').trim(), nom:fd.get('nom').trim(), email:(fd.get('email')||'').trim(), groupIds:[]};
+      if(!c.prenom || !c.nom) return;
+      state.coaches.push(c);
+      await saveState();
+      showToast('Coach ajouté.');
+      render();
+    });
+  }
+  app.querySelectorAll('[data-toggle-edit-coach]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const id = el.dataset.toggleEditCoach;
+      ui.editingCoachId = ui.editingCoachId===id ? null : id;
+      render();
+    });
+  });
+  app.querySelectorAll('[data-delete-coach]').forEach(el=>{
+    el.addEventListener('click', async ()=>{
+      if(!confirm('Supprimer ce coach ?')) return;
+      state.coaches = state.coaches.filter(c=>c.id!==el.dataset.deleteCoach);
+      await saveState();
+      showToast('Coach supprimé.');
+      render();
+    });
+  });
+  app.querySelectorAll('[data-coach-group]').forEach(el=>{
+    el.addEventListener('change', async ()=>{
+      const [coachId, groupId] = el.dataset.coachGroup.split('|');
+      const coach = state.coaches.find(c=>c.id===coachId);
+      if(!coach) return;
+      coach.groupIds = coach.groupIds || [];
+      if(el.checked){
+        if(!coach.groupIds.includes(groupId)) coach.groupIds.push(groupId);
+      }else{
+        coach.groupIds = coach.groupIds.filter(g=>g!==groupId);
+      }
+      await saveState();
+      showToast('Assignation mise à jour.');
+      render();
+    });
+  });
+
+  // --- GROUPES & SAISONS ---
+  app.querySelectorAll('[data-groupes-subtab]').forEach(el=>{
+    el.addEventListener('click', ()=>{ ui.groupesSubTab = el.dataset.groupesSubtab; render(); });
+  });
+  const selGroupesSaison = document.getElementById('select-groupes-saison');
+  if(selGroupesSaison) selGroupesSaison.addEventListener('change', ()=>{ ui.selGroupSaison = selGroupesSaison.value; render(); });
+  const btnDuplicateSaisonGroups = document.getElementById('btn-duplicate-saison-groups');
+  if(btnDuplicateSaisonGroups){
+    btnDuplicateSaisonGroups.addEventListener('click', async ()=>{
+      const fromSaisonId = ui.selGroupSaison || state.saisonActiveId;
+      const fromGroups = state.groups.filter(g=>(g.saisonId||state.saisonActiveId)===fromSaisonId);
+      if(fromGroups.length===0) return;
+      const nextLabel = nextSaisonLabel(saisonById(fromSaisonId)?.label || defaultSaisonLabel());
+      let target = state.saisons.find(s=>s.label===nextLabel);
+      if(!target){
+        target = {id:uid(), label: nextLabel};
+        state.saisons.push(target);
+      }
+      fromGroups.forEach(g=>{
+        state.groups.push({id:uid(), nom:g.nom, jour:g.jour, heure:g.heure, saisonId: target.id});
+      });
+      ui.selGroupSaison = target.id;
+      await saveState();
+      showToast(`${fromGroups.length} groupe(s) dupliqué(s) vers ${target.label}.`);
+      render();
+    });
+  }
+  const formAddGroup = document.getElementById('form-add-group');
+  if(formAddGroup){
+    formAddGroup.addEventListener('submit', async e=>{
+      e.preventDefault();
+      const fd = new FormData(formAddGroup);
+      const g = {id:uid(), nom:fd.get('nom').trim(), jour:fd.get('jour'), heure:fd.get('heure'), saisonId: ui.selGroupSaison || state.saisonActiveId};
+      if(!g.nom) return;
+      state.groups.push(g);
+      ui.selGroupManage = g.id;
+      await saveState();
+      showToast('Groupe créé.');
+      render();
+    });
+  }
+  app.querySelectorAll('[data-select-group]').forEach(el=>{
+    el.addEventListener('click', ()=>{ ui.selGroupManage = el.dataset.selectGroup; render(); });
+  });
+  app.querySelectorAll('[data-delete-group]').forEach(el=>{
+    el.addEventListener('click', async ()=>{
+      if(!confirm('Supprimer ce groupe et tous ses élèves ?')) return;
+      const gid = el.dataset.deleteGroup;
+      const studentIds = studentsOfGroup(gid).map(s=>s.id);
+      state.groups = state.groups.filter(g=>g.id!==gid);
+      state.students = state.students.filter(s=>s.groupId!==gid);
+      state.sessions = state.sessions.filter(s=>s.groupId!==gid);
+      state.performance = state.performance.filter(p=>!studentIds.includes(p.studentId));
+      if(ui.selGroupManage===gid) ui.selGroupManage = null;
+      await saveState();
+      showToast('Groupe supprimé.');
+      render();
+    });
+  });
+  app.querySelectorAll('[data-goto-eleves]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      ui.elevesFilterGroup = el.dataset.gotoEleves;
+      ui.tab = 'eleves';
+      render();
+    });
+  });
+
+  // --- STAGES ---
+  const formAddStage = document.getElementById('form-add-stage');
+  if(formAddStage){
+    formAddStage.addEventListener('submit', async e=>{
+      e.preventDefault();
+      const fd = new FormData(formAddStage);
+      const nom = fd.get('nom').trim();
+      const dateDebut = fd.get('dateDebut');
+      const dateFin = fd.get('dateFin');
+      if(!nom || !dateDebut || !dateFin) return;
+      state.stages.push({
+        id:uid(), nom, dateDebut, dateFin,
+        objectifs:(fd.get('objectifs')||'').trim(),
+        coachId: fd.get('coachId') || null,
+        saisonId: ui.selGroupSaison || state.saisonActiveId,
+        participantIds: [], commentaires: {}
+      });
+      await saveState();
+      showToast('Stage créé.');
+      render();
+    });
+  }
+  app.querySelectorAll('[data-toggle-stage]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const id = el.dataset.toggleStage;
+      ui.openStageId = ui.openStageId===id ? null : id;
+      render();
+    });
+  });
+  app.querySelectorAll('[data-delete-stage]').forEach(el=>{
+    el.addEventListener('click', async ()=>{
+      if(!confirm('Supprimer ce stage ?')) return;
+      state.stages = state.stages.filter(st=>st.id!==el.dataset.deleteStage);
+      if(ui.openStageId===el.dataset.deleteStage) ui.openStageId = null;
+      await saveState();
+      showToast('Stage supprimé.');
+      render();
+    });
+  });
+  app.querySelectorAll('[data-stage-participant]').forEach(el=>{
+    el.addEventListener('change', async ()=>{
+      const [stageId, studentId] = el.dataset.stageParticipant.split('|');
+      const st = state.stages.find(x=>x.id===stageId);
+      if(!st) return;
+      st.participantIds = st.participantIds || [];
+      if(el.checked){
+        if(!st.participantIds.includes(studentId)) st.participantIds.push(studentId);
+      }else{
+        st.participantIds = st.participantIds.filter(id=>id!==studentId);
+      }
+      await saveState();
+      render();
+    });
+  });
+  app.querySelectorAll('[data-stage-comment]').forEach(el=>{
+    el.addEventListener('change', async ()=>{
+      const [stageId, studentId] = el.dataset.stageComment.split('|');
+      const st = state.stages.find(x=>x.id===stageId);
+      if(!st) return;
+      st.commentaires = st.commentaires || {};
+      st.commentaires[studentId] = el.value;
+      await saveState();
+      showToast('Commentaire enregistré.');
+    });
+  });
+  app.querySelectorAll('[data-goto-eval-student]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      ui.perfStudent = el.dataset.gotoEvalStudent;
+      ui.tab = 'performance';
+      ui.performanceSubTab = 'fiche';
+      render();
+    });
+  });
+
+
+
+  // --- ÉLÈVES (module dédié) ---
+  const formAddStudentEleves = document.getElementById('form-add-student-eleves');
+  if(formAddStudentEleves){
+    formAddStudentEleves.addEventListener('submit', async e=>{
+      e.preventDefault();
+      const fd = new FormData(formAddStudentEleves);
+      const s = {
+        id:uid(), prenom:fd.get('prenom').trim(), nom:fd.get('nom').trim(),
+        dateNaissance: fd.get('dateNaissance') || null,
+        parentEmail:(fd.get('email')||'').trim(), groupId:fd.get('groupId'),
+        niveau: fd.get('niveau') || 'debutant',
+        numeroLicence: (fd.get('numeroLicence')||'').trim(),
+        attestationCharte: fd.get('attestationCharte') === 'on',
+        attestationAccident: fd.get('attestationAccident') === 'on'
+      };
+      if(!s.prenom || !s.nom || !s.groupId) return;
+      state.students.push(s);
+      await saveState();
+      showToast('Élève ajouté.');
+      render();
+    });
+  }
+  const selElevesFilter = document.getElementById('select-eleves-filter-group');
+  if(selElevesFilter) selElevesFilter.addEventListener('change', ()=>{ ui.elevesFilterGroup = selElevesFilter.value; render(); });
+  const inpElevesSearch = document.getElementById('input-eleves-search');
+  if(inpElevesSearch){
+    inpElevesSearch.addEventListener('input', ()=>{ ui.elevesSearch = inpElevesSearch.value; });
+    inpElevesSearch.addEventListener('change', ()=>{ ui.elevesSearch = inpElevesSearch.value; render(); });
+  }
+  app.querySelectorAll('[data-edit-student]').forEach(el=>{
+    el.addEventListener('click', ()=>{ ui.editingStudentId = el.dataset.editStudent; render(); });
+  });
+  app.querySelectorAll('[data-cancel-edit-student]').forEach(el=>{
+    el.addEventListener('click', ()=>{ ui.editingStudentId = null; render(); });
+  });
+  const formEditStudent = document.getElementById('form-edit-student');
+  if(formEditStudent){
+    formEditStudent.addEventListener('submit', async e=>{
+      e.preventDefault();
+      const sid = formEditStudent.dataset.studentId;
+      const fd = new FormData(formEditStudent);
+      const s = studentById(sid);
+      if(!s) return;
+      s.prenom = fd.get('prenom').trim();
+      s.nom = fd.get('nom').trim();
+      s.dateNaissance = fd.get('dateNaissance') || null;
+      s.groupId = fd.get('groupId');
+      s.niveau = fd.get('niveau') || 'debutant';
+      s.numeroLicence = (fd.get('numeroLicence')||'').trim();
+      s.parentEmail = (fd.get('email')||'').trim();
+      s.attestationCharte = fd.get('attestationCharte') === 'on';
+      s.attestationAccident = fd.get('attestationAccident') === 'on';
+      ui.editingStudentId = null;
+      await saveState();
+      showToast('Élève modifié.');
+      render();
+    });
+  }
+  app.querySelectorAll('[data-delete-student]').forEach(el=>{
+    el.addEventListener('click', async ()=>{
+      if(!confirm('Retirer cet élève ?')) return;
+      const sid = el.dataset.deleteStudent;
+      state.students = state.students.filter(s=>s.id!==sid);
+      state.performance = state.performance.filter(p=>p.studentId!==sid);
+      await saveState();
+      showToast('Élève retiré.');
+      render();
+    });
+  });
+
+  // --- PRÉSENCES ---
+  const selGA = document.getElementById('select-group-attendance');
+  if(selGA) selGA.addEventListener('change', ()=>{ ui.selGroupAttendance = selGA.value; render(); });
+  const inpDate = document.getElementById('input-attendance-date');
+  if(inpDate) inpDate.addEventListener('change', ()=>{ ui.attendanceDate = inpDate.value; render(); });
+  const formAtt = document.getElementById('form-attendance');
+  function setRowStatus(row, status){
+    const hidden = row.querySelector('input[type=hidden]');
+    if(hidden) hidden.value = status;
+    row.querySelectorAll('.ptoggle-btn').forEach(b=>b.classList.remove('active-present','active-absent','active-justifiee'));
+    const btn = row.querySelector(`[data-presence-set$="|${status}"]`);
+    if(btn) btn.classList.add(`active-${status}`);
+  }
+  const btnAllPresent = document.getElementById('btn-mark-all-present');
+  if(btnAllPresent) btnAllPresent.addEventListener('click', ()=>{
+    formAtt.querySelectorAll('tr[data-student-row]').forEach(row=>setRowStatus(row,'present'));
+  });
+  const btnAllAbsent = document.getElementById('btn-mark-all-absent');
+  if(btnAllAbsent) btnAllAbsent.addEventListener('click', ()=>{
+    formAtt.querySelectorAll('tr[data-student-row]').forEach(row=>setRowStatus(row,'absent'));
+  });
+  app.querySelectorAll('[data-presence-set]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const [studentId, status] = btn.dataset.presenceSet.split('|');
+      const row = btn.closest('tr[data-student-row]');
+      if(row) setRowStatus(row, status);
+    });
+  });
+  if(formAtt){
+    formAtt.addEventListener('submit', async e=>{
+      e.preventDefault();
+      const fd = new FormData(formAtt);
+      const eleves = studentsOfGroup(ui.selGroupAttendance);
+      const presences = {};
+      eleves.forEach(s=>{ presences[s.id] = fd.get(s.id) || 'absent'; });
+      let session = state.sessions.find(s=>s.groupId===ui.selGroupAttendance && s.date===ui.attendanceDate);
+      if(!session){
+        session = {id:uid(), groupId:ui.selGroupAttendance, date:ui.attendanceDate, presences:{}};
+        state.sessions.push(session);
+      }
+      session.presences = presences;
+      session.coachId = fd.get('coachId') || null;
+      await saveState();
+      showToast('Présences enregistrées.');
+      render();
+    });
+  }
+
+  // --- ALERTES ---
+  const selThresh = document.getElementById('select-threshold');
+  if(selThresh) selThresh.addEventListener('change', ()=>{ ui.alertThreshold = Number(selThresh.value); render(); });
+
+  // --- PERFORMANCE ---
+  app.querySelectorAll('[data-perf-subtab]').forEach(el=>{
+    el.addEventListener('click', ()=>{ ui.performanceSubTab = el.dataset.perfSubtab; render(); });
+  });
+  const selPerf = document.getElementById('select-perf-student');
+  if(selPerf) selPerf.addEventListener('change', ()=>{ ui.perfStudent = selPerf.value; render(); });
+  const selPerfNiveau = document.getElementById('select-perf-niveau');
+  if(selPerfNiveau){
+    selPerfNiveau.addEventListener('change', async ()=>{
+      const st = studentById(selPerfNiveau.dataset.studentId);
+      if(!st) return;
+      st.niveau = selPerfNiveau.value;
+      await saveState();
+      showToast('Niveau mis à jour.');
+      render();
+    });
+  }
+
+  const formAddEval = document.getElementById('form-add-eval');
+  if(formAddEval){
+    formAddEval.addEventListener('submit', async e=>{
+      e.preventDefault();
+      const fd = new FormData(formAddEval);
+      const evalNiveau = formAddEval.dataset.evalNiveau || 'debutant';
+      const sections = {};
+      gridFor(evalNiveau).forEach(section=>{
+        sections[section.key] = {};
+        section.criteria.forEach(c=>{
+          const v = fd.get(`s_${section.key}__${c.key}`);
+          if(v!==null && v!=='') sections[section.key][c.key] = Number(v);
+        });
+      });
+      const indicateurs = {
+        scoreTrous: fd.get('ind_trous')||'',
+        scoreReel: fd.get('ind_score')||'',
+        fairwaysTouches: fd.get('ind_fairways_touches')||'',
+        fairwaysTotal: fd.get('ind_fairways_total')||'',
+        puttsTotal: fd.get('ind_putts')||''
+      };
+      const student = studentById(ui.perfStudent);
+      const entry = {
+        id:uid(), studentId:ui.perfStudent, date:fd.get('date'),
+        coach: fd.has('coachId') ? (()=>{ const c=coachById(fd.get('coachId')); return c ? c.prenom+' '+c.nom : ''; })() : (fd.get('coach')||'').trim(),
+        coachId: fd.has('coachId') ? (fd.get('coachId')||null) : null,
+        niveau: evalNiveau,
+        niveauGroupe: student ? (groupById(student.groupId)?.nom || '') : '',
+        sections, indicateurs,
+        pointsForts:(fd.get('pointsForts')||'').trim(),
+        axesAmelioration:(fd.get('axesAmelioration')||'').trim()
+      };
+      state.performance.push(entry);
+      await saveState();
+      showToast('Évaluation enregistrée.');
+      render();
+    });
+  }
+  app.querySelectorAll('[data-delete-eval]').forEach(el=>{
+    el.addEventListener('click', async ()=>{
+      if(!confirm('Supprimer cette évaluation ?')) return;
+      state.performance = state.performance.filter(p=>p.id!==el.dataset.deleteEval);
+      await saveState();
+      showToast('Évaluation supprimée.');
+      render();
+    });
+  });
+
+  const formAddObjective = document.getElementById('form-add-objective');
+  if(formAddObjective){
+    formAddObjective.addEventListener('submit', async e=>{
+      e.preventDefault();
+      const fd = new FormData(formAddObjective);
+      const titre = fd.get('titre').trim();
+      if(!titre) return;
+      state.objectifs.push({
+        id:uid(), studentId:ui.perfStudent, titre,
+        description:(fd.get('description')||'').trim(),
+        dateCible: fd.get('dateCible') || null,
+        statut:'en_cours', dateCreation: todayISO()
+      });
+      await saveState();
+      showToast('Objectif ajouté.');
+      render();
+    });
+  }
+  app.querySelectorAll('[data-objective-status]').forEach(el=>{
+    el.addEventListener('change', async ()=>{
+      const o = state.objectifs.find(x=>x.id===el.dataset.objectiveStatus);
+      if(!o) return;
+      o.statut = el.value;
+      await saveState();
+      showToast('Objectif mis à jour.');
+      render();
+    });
+  });
+  app.querySelectorAll('[data-delete-objective]').forEach(el=>{
+    el.addEventListener('click', async ()=>{
+      if(!confirm('Supprimer cet objectif ?')) return;
+      state.objectifs = state.objectifs.filter(o=>o.id!==el.dataset.deleteObjective);
+      await saveState();
+      showToast('Objectif supprimé.');
+      render();
+    });
+  });
+
+  // --- BULLETINS ---
+  const selBS = document.getElementById('select-bulletin-student');
+  if(selBS) selBS.addEventListener('change', ()=>{ ui.bulletinStudent = selBS.value; render(); });
+  const inpBM = document.getElementById('input-bulletin-month');
+  if(inpBM) inpBM.addEventListener('change', ()=>{ ui.bulletinMonth = inpBM.value; });
+  const btnGen = document.getElementById('btn-generate-bulletin');
+  if(btnGen){
+    btnGen.addEventListener('click', ()=>{
+      const student = studentById(ui.bulletinStudent);
+      if(!student) return;
+      const monthVal = document.getElementById('input-bulletin-month').value || ui.bulletinMonth;
+      ui.bulletinMonth = monthVal;
+      const appreciation = document.getElementById('input-bulletin-appreciation').value;
+      const txt = generateBulletinText(student, monthVal, appreciation);
+      document.getElementById('bulletin-output-wrap').style.display = 'block';
+      document.getElementById('bulletin-text').value = txt;
+      const mailLink = document.getElementById('btn-mailto-bulletin');
+      const warn = document.getElementById('bulletin-email-warning');
+      let warnMsg = '';
+      if(student.parentEmail){
+        const subject = encodeURIComponent(`Bulletin mensuel — ${student.prenom} ${student.nom}`);
+        const body = encodeURIComponent(txt);
+        mailLink.href = `mailto:${student.parentEmail}?subject=${subject}&body=${body}`;
+        warnMsg = `Sera envoyé à : ${student.parentEmail}`;
+      }else{
+        mailLink.href = '#';
+        mailLink.addEventListener('click', ev=>ev.preventDefault(), {once:true});
+        warnMsg = "Aucun e-mail parent renseigné pour cet élève — ajoutez-le dans l'onglet Élèves.";
+      }
+      if(txt.length > 1500){
+        warnMsg += ` ⚠️ Bulletin détaillé (${txt.length} caractères) : si le bouton e-mail n'ouvre rien dans votre messagerie, utilisez « Copier le texte » et collez-le manuellement dans votre message.`;
+      }
+      warn.textContent = warnMsg;
+    });
+  }
+  const btnCopy = document.getElementById('btn-copy-bulletin');
+  if(btnCopy){
+    btnCopy.addEventListener('click', ()=>{
+      const ta = document.getElementById('bulletin-text');
+      ta.select();
+      navigator.clipboard.writeText(ta.value).then(()=>showToast('Texte copié.')).catch(()=>{
+        document.execCommand('copy');
+        showToast('Texte copié.');
+      });
+    });
+  }
+}
+
+/* ---------------------------------------------------------
+   INIT
+--------------------------------------------------------- */
+(async function init(){
+  if(!sb){
+    document.body.innerHTML = `<div style="max-width:520px;margin:60px auto;padding:24px;font-family:sans-serif;">
+      <h2>Configuration manquante</h2>
+      <p>Ouvrez le fichier HTML et remplissez <code>SUPABASE_URL</code> et <code>SUPABASE_ANON_KEY</code> tout en haut de la balise &lt;script&gt;, avec les valeurs de votre projet Supabase (Settings → API).</p>
+    </div>`;
+    return;
+  }
+  bindAuthEvents();
+  const { data: { session } } = await sb.auth.getSession();
+  if(session){ await showAppScreen(); } else { showLoginScreen(); }
+
+  sb.auth.onAuthStateChange(async (event, session)=>{
+    if(event === 'SIGNED_IN'){ await showAppScreen(); }
+    else if(event === 'SIGNED_OUT'){ showLoginScreen(); }
+  });
+})();
+</script>
+</body>
+</html>
