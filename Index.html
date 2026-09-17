@@ -547,8 +547,8 @@ const PRIORITES_SUGGESTION = [
    -> Collez ici l'URL et la clé "anon public" de votre projet
       Supabase (Settings > API dans le tableau de bord Supabase).
 --------------------------------------------------------- */
-const SUPABASE_URL = "https://iykzkzeigstenivlocyz.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_WtS3uJ1XBX6vct4DBGF-EA_uViN9MGw";
+const SUPABASE_URL = "COLLEZ_ICI_VOTRE_PROJECT_URL";
+const SUPABASE_ANON_KEY = "COLLEZ_ICI_VOTRE_CLE_ANON_PUBLIC";
 const ROW_ID = 'golf-cognac'; // identifiant de la ligne unique qui stocke toutes les données
 
 const sb = (SUPABASE_URL.startsWith('http')) ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
@@ -1560,12 +1560,29 @@ function viewPresencesAppel(){
 
 function viewPresencesRapport(){
   const filterGroup = ui.rapportFilterGroup || 'all';
-  let sessions = state.sessions.slice();
-  if(filterGroup !== 'all') sessions = sessions.filter(s=>s.groupId===filterGroup);
-  sessions.sort((a,b)=> b.date.localeCompare(a.date));
+  const groupsToShow = filterGroup === 'all' ? state.groups.slice() : state.groups.filter(g=>g.id===filterGroup);
 
-  const totalSeances = sessions.length;
-  const globalRate = attendanceRate(sessions);
+  const rows = groupsToShow.map(g=>{
+    const sessions = sessionsOfGroup(g.id);
+    let present = 0, absent = 0;
+    sessions.forEach(s=>{
+      Object.values(s.presences||{}).map(normalizePresence).forEach(v=>{
+        if(v==='present') present++;
+        else if(v==='absent') absent++;
+      });
+    });
+    return {
+      group: g,
+      coaches: coachesOfGroup(g.id),
+      nbSeances: sessions.length,
+      present, absent,
+      rate: attendanceRate(sessions)
+    };
+  }).sort((a,b)=>a.group.nom.localeCompare(b.group.nom));
+
+  const totalSeances = rows.reduce((a,r)=>a+r.nbSeances, 0);
+  const sessionsForRate = filterGroup==='all' ? state.sessions : state.sessions.filter(s=>s.groupId===filterGroup);
+  const globalRate = attendanceRate(sessionsForRate);
 
   return `
     <div class="card">
@@ -1584,22 +1601,18 @@ function viewPresencesRapport(){
     </div>
 
     <div class="card">
-      ${ sessions.length===0 ? `<div class="empty">Aucune séance enregistrée${filterGroup!=='all'?' pour ce groupe':''}.</div>` :
-        `<table><thead><tr><th>Date</th><th>Groupe</th><th>Coach</th><th>Nombre présents</th><th>Nombre absents</th></tr></thead><tbody>
-          ${sessions.map(s=>{
-            const vals = Object.values(s.presences||{}).map(normalizePresence);
-            const present = vals.filter(v=>v==='present').length;
-            const absent = vals.filter(v=>v==='absent').length;
-            const coach = s.coachId ? coachById(s.coachId) : null;
-            const group = groupById(s.groupId);
-            return `<tr>
-              <td>${fmtDate(s.date)}</td>
-              <td>${esc(group?.nom||'—')}</td>
-              <td>${coach?esc(coach.prenom)+' '+esc(coach.nom):'<span class="helper">non renseigné</span>'}</td>
-              <td>${present}</td>
-              <td>${absent}</td>
-            </tr>`;
-          }).join('')}
+      ${ rows.length===0 ? `<div class="empty">Aucun groupe à afficher.</div>` :
+        `<table><thead><tr><th>Groupe</th><th>Coach(s)</th><th>Séances</th><th>Total présents</th><th>Total absents</th><th>Taux de présence</th></tr></thead><tbody>
+          ${rows.map(r=>`
+            <tr>
+              <td>${esc(r.group.nom)}</td>
+              <td>${r.coaches.length ? r.coaches.map(c=>esc(c.prenom)+' '+esc(c.nom)).join(', ') : '<span class="helper">non renseigné</span>'}</td>
+              <td>${r.nbSeances}</td>
+              <td>${r.present}</td>
+              <td>${r.absent}</td>
+              <td>${r.rate!==null ? `<span class="pill ${r.rate>=80?'ok':r.rate>=50?'warn':'bad'}">${r.rate}%</span>` : '<span class="helper">aucune séance</span>'}</td>
+            </tr>
+          `).join('')}
         </tbody></table>`
       }
     </div>
