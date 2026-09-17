@@ -331,6 +331,8 @@ let ui = {
   selGroupSaison: null,
   openStageId: null,
   openCompetitionId: null,
+  presencesSubTab: 'appel',
+  rapportFilterGroup: 'all',
   bulletinStudent: null,
   bulletinMonth: monthISO(new Date()),
   elevesFilterGroup: 'all',
@@ -545,8 +547,8 @@ const PRIORITES_SUGGESTION = [
    -> Collez ici l'URL et la clé "anon public" de votre projet
       Supabase (Settings > API dans le tableau de bord Supabase).
 --------------------------------------------------------- */
-const SUPABASE_URL = "https://iykzkzeigstenivlocyz.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_WtS3uJ1XBX6vct4DBGF-EA_uViN9MGw";
+const SUPABASE_URL = "COLLEZ_ICI_VOTRE_PROJECT_URL";
+const SUPABASE_ANON_KEY = "COLLEZ_ICI_VOTRE_CLE_ANON_PUBLIC";
 const ROW_ID = 'golf-cognac'; // identifiant de la ligne unique qui stocke toutes les données
 
 const sb = (SUPABASE_URL.startsWith('http')) ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
@@ -645,7 +647,8 @@ function bindAuthEvents(){
     document.getElementById('login-error').textContent = '';
     const { error } = await sb.auth.signInWithPassword({ email, password });
     if(error){
-      document.getElementById('login-error').textContent = "Identifiants incorrects.";
+      document.getElementById('login-error').textContent = error.message || "Identifiants incorrects.";
+      console.error('Erreur de connexion Supabase :', error);
     }
   });
   document.getElementById('btn-logout').addEventListener('click', async ()=>{
@@ -1463,6 +1466,18 @@ function viewEleves(){
    VUE : PRÉSENCES
 --------------------------------------------------------- */
 function viewPresences(){
+  return `
+    <h2 class="section-title">Présences</h2>
+    <p class="section-sub">Faites l'appel séance par séance, ou consultez le rapport global de suivi des présences.</p>
+    <div class="inline-actions" style="margin-bottom:16px;">
+      <button class="btn ${ui.presencesSubTab==='appel'?'':'secondary'} small" data-presences-subtab="appel">Faire l'appel</button>
+      <button class="btn ${ui.presencesSubTab==='rapport'?'':'secondary'} small" data-presences-subtab="rapport">Rapport de présences</button>
+    </div>
+    ${ ui.presencesSubTab==='rapport' ? viewPresencesRapport() : viewPresencesAppel() }
+  `;
+}
+
+function viewPresencesAppel(){
   const groupId = ui.selGroupAttendance && groupById(ui.selGroupAttendance) ? ui.selGroupAttendance : (state.groups[0]?.id || null);
   ui.selGroupAttendance = groupId;
   const eleves = groupId ? studentsOfGroup(groupId) : [];
@@ -1472,9 +1487,6 @@ function viewPresences(){
   const past = groupId ? sessionsOfGroup(groupId).slice().reverse().slice(0,8) : [];
 
   return `
-    <h2 class="section-title">Présences</h2>
-    <p class="section-sub">Choisissez un groupe et une date de séance, puis indiquez le statut de chaque élève (présent, absent, ou absence justifiée).</p>
-
     <div class="card">
       <div class="form-grid" style="align-items:end;">
         <div class="field"><label>Groupe</label>
@@ -1543,6 +1555,67 @@ function viewPresences(){
         }).join('')}
       </tbody></table>
     </div>` : ''}
+  `;
+}
+
+function viewPresencesRapport(){
+  const filterGroup = ui.rapportFilterGroup || 'all';
+  const groupsToShow = filterGroup === 'all' ? state.groups.slice() : state.groups.filter(g=>g.id===filterGroup);
+
+  const rows = groupsToShow.map(g=>{
+    const sessions = sessionsOfGroup(g.id);
+    let present = 0, absent = 0;
+    sessions.forEach(s=>{
+      Object.values(s.presences||{}).map(normalizePresence).forEach(v=>{
+        if(v==='present') present++;
+        else if(v==='absent') absent++;
+      });
+    });
+    return {
+      group: g,
+      coaches: coachesOfGroup(g.id),
+      nbSeances: sessions.length,
+      present, absent,
+      rate: attendanceRate(sessions)
+    };
+  }).sort((a,b)=>a.group.nom.localeCompare(b.group.nom));
+
+  const totalSeances = rows.reduce((a,r)=>a+r.nbSeances, 0);
+  const sessionsForRate = filterGroup==='all' ? state.sessions : state.sessions.filter(s=>s.groupId===filterGroup);
+  const globalRate = attendanceRate(sessionsForRate);
+
+  return `
+    <div class="card">
+      <div class="field" style="max-width:280px;margin-bottom:0;">
+        <label>Filtrer par groupe</label>
+        <select id="select-rapport-group">
+          <option value="all" ${filterGroup==='all'?'selected':''}>Tous les groupes</option>
+          ${state.groups.map(g=>`<option value="${g.id}" ${filterGroup===g.id?'selected':''}>${esc(g.nom)}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat"><div class="num">${totalSeances}</div><div class="label">Séances enregistrées</div></div>
+      <div class="stat"><div class="num">${globalRate!==null?globalRate+'%':'—'}</div><div class="label">Taux de présence</div></div>
+    </div>
+
+    <div class="card">
+      ${ rows.length===0 ? `<div class="empty">Aucun groupe à afficher.</div>` :
+        `<table><thead><tr><th>Groupe</th><th>Coach(s)</th><th>Séances</th><th>Total présents</th><th>Total absents</th><th>Taux de présence</th></tr></thead><tbody>
+          ${rows.map(r=>`
+            <tr>
+              <td>${esc(r.group.nom)}</td>
+              <td>${r.coaches.length ? r.coaches.map(c=>esc(c.prenom)+' '+esc(c.nom)).join(', ') : '<span class="helper">non renseigné</span>'}</td>
+              <td>${r.nbSeances}</td>
+              <td>${r.present}</td>
+              <td>${r.absent}</td>
+              <td>${r.rate!==null ? `<span class="pill ${r.rate>=80?'ok':r.rate>=50?'warn':'bad'}">${r.rate}%</span>` : '<span class="helper">aucune séance</span>'}</td>
+            </tr>
+          `).join('')}
+        </tbody></table>`
+      }
+    </div>
   `;
 }
 
@@ -2756,6 +2829,11 @@ function bindEvents(){
   });
 
   // --- PRÉSENCES ---
+  app.querySelectorAll('[data-presences-subtab]').forEach(el=>{
+    el.addEventListener('click', ()=>{ ui.presencesSubTab = el.dataset.presencesSubtab; render(); });
+  });
+  const selRapportGroup = document.getElementById('select-rapport-group');
+  if(selRapportGroup) selRapportGroup.addEventListener('change', ()=>{ ui.rapportFilterGroup = selRapportGroup.value; render(); });
   const selGA = document.getElementById('select-group-attendance');
   if(selGA) selGA.addEventListener('change', ()=>{ ui.selGroupAttendance = selGA.value; render(); });
   const inpDate = document.getElementById('input-attendance-date');
